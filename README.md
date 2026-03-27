@@ -87,6 +87,16 @@ gtm-coding-agent/
 
 ---
 
+## Read the Web Guide
+
+Prefer reading to forking? The full playbook is available as a book-style web guide:
+
+**[The GTM Coding Agent Playbook on shawnos.ai](https://shawnos.ai/guide/gtm-coding-agent)**
+
+12 chapters, expanded with narrative, examples, and Shawn's perspective. The web version is for reading cover to cover. This repo is for forking and building.
+
+---
+
 ## Quick Start
 
 ```bash
