@@ -18,7 +18,7 @@ This is not a finished product. What you see today will look different next week
 
 ## See It Running
 
-<video src="../assets/dashboard-demo.mp4" controls width="100%"></video>
+https://github.com/shawnla90/gtm-coding-agent/releases/download/v0.2.0/dashboard-demo.mp4
 
 ---
 

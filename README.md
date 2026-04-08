@@ -112,7 +112,7 @@ Prefer reading to forking? The full playbook is available as a book-style web gu
 
 ## See It In Action
 
-<video src="assets/dashboard-demo.mp4" controls width="100%"></video>
+https://github.com/shawnla90/gtm-coding-agent/releases/download/v0.2.0/dashboard-demo.mp4
 
 *The signals dashboard running against a live Supabase database. 5 pages, dark theme, real-time polling.*
 
