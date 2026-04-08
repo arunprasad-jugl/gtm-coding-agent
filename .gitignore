@@ -37,3 +37,6 @@ CLAUDE.local.md
 *.tmp
 *.bak
 scratch/
+
+# Social content (private drafts)
+social/
