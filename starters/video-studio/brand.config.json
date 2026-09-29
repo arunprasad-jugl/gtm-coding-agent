@@ -34,7 +34,8 @@
     "tail": 0.6,
     "volume": 1.0,
     "music": null,
-    "musicGain": 0.16
+    "musicGain": 0.16,
+    "loudness": -18
   },
   "videos": [
     {
@@ -777,21 +778,25 @@
             },
             {
               "cue": "ring",
-              "at": 10600
+              "at": 10600,
+              "gain": 1.9
             },
             {
               "cue": "ring",
-              "at": 16600
+              "at": 16600,
+              "gain": 1.9
             },
             {
               "cue": "ring",
               "at": 22600,
-              "trim": 1.2
+              "trim": 1.2,
+              "gain": 1.9
             },
             {
               "cue": "ring",
               "at": 26800,
-              "trim": 1.0
+              "trim": 1.0,
+              "gain": 1.9
             },
             {
               "cue": "ping",
@@ -876,7 +881,8 @@
             {
               "cue": "ring",
               "at": 2200,
-              "trim": 1.4
+              "trim": 1.4,
+              "gain": 1.9
             },
             {
               "cue": "connect",

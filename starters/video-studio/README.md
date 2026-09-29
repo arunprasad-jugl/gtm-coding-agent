@@ -156,6 +156,18 @@ lengths and `build.js` lays each line back down at its exact offset in the
 cut. Narrated video has to be cut to the voice — guess the timing and the
 track either runs out early or gets clipped mid-sentence.
 
+Two things `voice.js` does that are easy to miss, and both are load-bearing:
+
+- **It caches takes.** Piper isn't deterministic — the same line synthesised
+  three times came out at 5.96s, 5.82s and 6.12s — so re-running used to
+  re-roll every line's timing and quietly desync frames already recorded.
+  Takes live in `out/voice/.takes/`, keyed on text and voice settings; a line
+  is only re-synthesised when one of those changes. `--fresh` re-rolls on
+  purpose (then re-record, because timing moves).
+- **It normalises loudness.** Every line is brought to `voice.loudness`
+  (default −18 LUFS) after any phone filter. Without it the HotelBell agent,
+  heard through the phone filter, measured 9 dB under the narrator.
+
 Pacing lives in `voice.lengthScale`, `gap`, `leadIn` and `tail`.
 `node setup-voice.js --list` shows the other voices. For a music bed, point
 `voice.music` at an audio file; `voice.musicGain` keeps it under the words.

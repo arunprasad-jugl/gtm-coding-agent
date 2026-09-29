@@ -10,11 +10,13 @@
 
      node setup-voice.js     # once, to fetch the model
      node voice.js           # -> out/voice/*.wav + manifest.json
-     node voice.js --video front-desk
+     node voice.js --video maya
+     node voice.js --fresh      # re-roll takes (timing moves: re-record after)
    --------------------------------------------------------------- */
 import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -49,6 +51,7 @@ const previous = fs.existsSync(manifestFile)
   ? JSON.parse(fs.readFileSync(manifestFile, "utf8"))
   : { videos: {} };
 const manifest = { model: v.model, leadIn, gap, tail, videos: { ...previous.videos } };
+let fresh = 0, reused = 0;
 
 for (const video of videos) {
   console.log(`\n\x1b[1m${video.id}\x1b[0m`);
@@ -76,9 +79,14 @@ for (const video of videos) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const wav = path.join(dir, `${name}-${String(i + 1).padStart(2, "0")}.wav`);
-      await speak(line, wav);
+      await speakCached(line, wav);
       // A voice heard through a handset is band-limited like one.
       if (line.fx === "phone") await phoneFx(wav);
+      // Then bring every line to one loudness. Different models, and the phone
+      // filter above all, land at very different levels — measured before this,
+      // the HotelBell agent sat 9 dB under the narrator, which on a phone
+      // speaker means the product's own voice barely comes through.
+      await normalize(wav, line.loudness ?? v.loudness ?? -18);
       const dur = await durationMs(wav);
 
       // Dialogue is placed where the picture needs it (`at`); narration
@@ -118,9 +126,45 @@ for (const video of videos) {
 }
 
 fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
+console.log(`\ntakes: ${fresh} synthesised, ${reused} reused from cache` +
+  (fresh ? "  — timing changed; re-run record.js" : "  — timing unchanged"));
 console.log(`\n→ out/voice/manifest.json\nNext: node record.js`);
 
 /* -------------------------------------------------------------------- */
+
+/**
+ * Piper is not deterministic: the same line synthesised three times came out
+ * at 5.96s, 5.82s and 6.12s. So every run used to re-roll every line's timing
+ * and silently desync any frames already recorded against the last run.
+ *
+ * Takes are cached by everything that shapes them. A line is only
+ * re-synthesised when its text or voice settings change, or with --fresh
+ * (to re-roll a take you don't like — then re-record, since timing moves).
+ * Filters and loudness are applied to a copy each run, so those can change
+ * freely without disturbing timing.
+ */
+async function speakCached(line, outFile) {
+  const voiceName = line.voice ?? v.model;
+  const key = crypto.createHash("sha1").update(JSON.stringify({
+    text: line.text,
+    voice: voiceName,
+    speaker: line.voice ? line.speaker ?? null : line.speaker ?? v.speaker ?? null,
+    lengthScale: line.lengthScale ?? lengthScale,
+    sentenceSilence,
+    volume: v.volume ?? 1.0,
+  })).digest("hex").slice(0, 16);
+
+  const takes = path.join(outRoot, ".takes");
+  fs.mkdirSync(takes, { recursive: true });
+  const take = path.join(takes, `${key}.wav`);
+  if (args.fresh || !fs.existsSync(take)) {
+    await speak(line, take);
+    fresh++;
+  } else {
+    reused++;
+  }
+  fs.copyFileSync(take, outFile);
+}
 
 function speak(line, outFile) {
   // Each line can be spoken by its own voice: the narrator, Maya, the
@@ -153,6 +197,33 @@ function speak(line, outFile) {
     p.on("close", (c) => (c === 0 ? resolve() : reject(new Error(`piper exited ${c}\n${err.trim()}`))));
 
     p.stdin.end(line.text);
+  });
+}
+
+/** Loudness-normalise to `lufs` integrated, keeping the file's sample rate. */
+function normalize(file, lufs) {
+  const tmp = file.replace(/\.wav$/, ".ln.wav");
+  return new Promise((resolve, reject) => {
+    const probe = spawn("ffprobe", ["-v", "error", "-select_streams", "a:0",
+      "-show_entries", "stream=sample_rate", "-of", "csv=p=0", file], { stdio: ["ignore", "pipe", "ignore"] });
+    let rate = "";
+    probe.stdout.on("data", (d) => (rate += d));
+    probe.on("close", () => {
+      const p = spawn("ffmpeg", [
+        "-hide_banner", "-loglevel", "error", "-y", "-i", file,
+        "-af", `loudnorm=I=${lufs}:TP=-2:LRA=9`,
+        "-ar", rate.trim() || "22050",
+        tmp,
+      ], { stdio: ["ignore", "ignore", "pipe"] });
+      let err = "";
+      p.stderr.on("data", (d) => (err += d));
+      p.on("error", reject);
+      p.on("close", (c) => {
+        if (c !== 0) return reject(new Error(`loudnorm failed\n${err.trim()}`));
+        fs.renameSync(tmp, file);
+        resolve();
+      });
+    });
   });
 }
 
