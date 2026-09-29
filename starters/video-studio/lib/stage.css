@@ -1,0 +1,267 @@
+/* ---------------------------------------------------------------
+   stage.css — shared look + scrubbable animation primitives.
+   Every scene links this. Brand tokens are injected by brand.js
+   (and by record.js at capture time) as --brand-* variables.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Fallbacks. brand.config.json -> theme overrides all of these. */
+  --brand-bg: #07070b;
+  --brand-bg-2: #0e0e16;
+  --brand-fg: #ffffff;
+  --brand-muted: #8a8aa0;
+  --brand-accent: #6d5efc;
+  --brand-accent-2: #ff4d8d;
+  --brand-font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --brand-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* One type scale for every aspect ratio. vmin is the short edge, so
+     1920x1080, 1080x1920 and 1080x1080 all render text at the same size. */
+  --u: 1vmin;
+  --t-hero: 10vmin;
+  --t-h1: 7.2vmin;
+  --t-h2: 4.4vmin;
+  --t-body: 2.9vmin;
+  --t-kicker: 2.1vmin;
+
+  --gutter: 9vmin;
+  --radius: 1.6vmin;
+}
+
+/* Scrubbing contract: every animation must hold its start state before it
+   begins and its end state after it finishes, otherwise seeking to an
+   arbitrary timestamp shows an un-animated element. */
+*, *::before, *::after { animation-fill-mode: both; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--brand-bg);
+  color: var(--brand-fg);
+  font-family: var(--brand-font-display);
+  overflow: hidden;
+  /* Kill subpixel/AA jitter between frames — it shows up as shimmer on video. */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+/* Hide until brand tokens + webfonts are applied, so preview doesn't flash
+   and a capture can never catch a fallback font. */
+html:not(.studio-ready) body { visibility: hidden; }
+
+.stage {
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3vmin;
+  padding: var(--gutter);
+  text-align: center;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.stage.left { align-items: flex-start; text-align: left; }
+
+/* --- background furniture ------------------------------------------------ */
+
+.bg-grid {
+  position: absolute; inset: -10%;
+  z-index: -2;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.055) 1px, transparent 1px);
+  background-size: 6vmin 6vmin;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, #000 30%, transparent 78%);
+}
+
+.bg-glow {
+  position: absolute; z-index: -3;
+  width: 110vmin; height: 110vmin; border-radius: 50%;
+  background: radial-gradient(circle, var(--brand-accent) 0%, transparent 68%);
+  opacity: .26; filter: blur(11vmin);
+  top: 50%; left: 50%; translate: -50% -50%;
+}
+.bg-glow.two {
+  background: radial-gradient(circle, var(--brand-accent-2) 0%, transparent 68%);
+  opacity: .24; width: 95vmin; height: 95vmin;
+}
+
+.bg-vignette {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.55) 100%);
+}
+
+/* --- type ---------------------------------------------------------------- */
+
+.kicker {
+  font-family: var(--brand-font-display);
+  font-size: var(--t-kicker);
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--brand-accent);
+  font-weight: 600;
+}
+
+.hero { font-size: var(--t-hero); font-weight: 800; letter-spacing: -.035em; line-height: .98; }
+h1, .h1 { font-size: var(--t-h1); font-weight: 700; letter-spacing: -.03em; line-height: 1.04; }
+h2, .h2 { font-size: var(--t-h2); font-weight: 600; letter-spacing: -.02em; line-height: 1.15; }
+.body   { font-size: var(--t-body); color: var(--brand-muted); line-height: 1.5; font-weight: 400; }
+
+.muted { color: var(--brand-muted); }
+/* Put this on the element that DIRECTLY contains the text. background-clip:text
+   only paints glyphs sharing the background's paint layer, so a wrapper won't
+   work once a descendant has overflow:hidden (like .line) or a transform — and
+   a scrubbed animation always leaves a transform applied. */
+.gradient-text {
+  background: linear-gradient(100deg, var(--brand-fg) 8%, var(--brand-accent) 52%, var(--brand-accent-2) 92%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.pill {
+  display: inline-flex; align-items: center; gap: 1.2vmin;
+  padding: 1.3vmin 2.8vmin;
+  font-size: var(--t-body); font-weight: 500;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 100vmax;
+  background: rgba(255,255,255,.045);
+  backdrop-filter: blur(1vmin);
+}
+.pill::before {
+  content: ""; width: 1.1vmin; height: 1.1vmin; border-radius: 50%;
+  background: var(--brand-accent); flex: none;
+}
+
+.row { display: flex; gap: 2.2vmin; flex-wrap: wrap; justify-content: center; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 1.5vmin;
+  padding: 2.2vmin 4.4vmin;
+  font-size: var(--t-body); font-weight: 600;
+  color: #fff; border-radius: 100vmax;
+  background: linear-gradient(100deg, var(--brand-accent), var(--brand-accent-2));
+  box-shadow: 0 2vmin 6vmin -1.5vmin var(--brand-accent);
+}
+
+.url {
+  font-family: var(--brand-font-mono);
+  font-size: var(--t-body);
+  letter-spacing: .08em;
+  color: var(--brand-muted);
+}
+
+/* --- animation primitives -----------------------------------------------
+   Drive each with --delay (and optionally --dur) from the scene:
+       <h1 class="a-rise" style="--delay:.4s">…</h1>
+   Anything using these is automatically scrubbable by studio.js.
+   ------------------------------------------------------------------------ */
+
+.a-rise, .a-fade, .a-blur, .a-pop, .a-wipe, .a-draw, .a-slide {
+  animation-duration: var(--dur, .9s);
+  animation-delay: var(--delay, 0s);
+  animation-timing-function: cubic-bezier(.16, 1, .3, 1); /* easeOutExpo-ish */
+}
+
+@keyframes rise  { from { opacity: 0; transform: translateY(3.2vmin); } to { opacity: 1; transform: none; } }
+@keyframes fade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes blurIn{ from { opacity: 0; filter: blur(1.4vmin); transform: scale(1.06); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes pop   { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
+@keyframes slide { from { opacity: 0; transform: translateX(-3.5vmin); } to { opacity: 1; transform: none; } }
+
+.a-rise  { animation-name: rise; }
+.a-fade  { animation-name: fade; }
+.a-blur  { animation-name: blurIn; }
+.a-pop   { animation-name: pop; }
+.a-slide { animation-name: slide; }
+
+/* Masked line reveal: wrap each line in .line > span */
+.line { display: block; overflow: hidden; padding-bottom: .12em; }
+.line > span {
+  display: inline-block;
+  animation-name: lineUp;
+  animation-duration: var(--dur, 1s);
+  animation-delay: var(--delay, 0s);
+  animation-timing-function: cubic-bezier(.16, 1, .3, 1);
+}
+/* Ends on `none`, not `translateY(0)`: a lingering transform keeps a stacking
+   context alive, and that stops background-clip:text on an ancestor from
+   painting the glyphs — a gradient headline would render invisible. */
+@keyframes lineUp { from { transform: translateY(105%); } to { transform: none; } }
+
+/* Left-to-right wipe, for rules and underlines */
+.a-wipe { animation-name: wipe; transform-origin: left center; }
+@keyframes wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.rule { height: .35vmin; width: 100%; background: linear-gradient(90deg, var(--brand-accent), var(--brand-accent-2)); border-radius: 100vmax; }
+
+/* Slow ambient drift — loops, so it reads as motion under static text.
+   Safe to scrub: an infinite animation at any currentTime is well-defined. */
+.a-drift { animation: drift 9s ease-in-out infinite alternate; }
+@keyframes drift { from { transform: translate(-3vmin, -2vmin) scale(1); } to { transform: translate(3vmin, 2vmin) scale(1.12); } }
+
+/* Exit: hold the scene, then let it fall away before the cut. Set --out to
+   the scene duration minus ~0.5s. */
+.a-out { animation: fadeOut .5s ease-in forwards; animation-delay: var(--out, var(--scene-out, 99s)); }
+@keyframes fadeOut { to { opacity: 0; transform: translateY(-1.6vmin); } }
+
+/* ---------------------------------------------------------------
+   Brand lockup + light stage
+   --------------------------------------------------------------- */
+
+.bell { width: 100%; height: 100%; display: block; overflow: visible; }
+
+.wordmark-lockup {
+  display: inline-flex; align-items: center; gap: .28em;
+  font-family: var(--brand-font-serif, serif);
+  font-weight: 500; letter-spacing: -.01em;
+  color: var(--brand-accent);
+  line-height: 1;
+}
+.wordmark-lockup .wm-bell { width: 1.15em; height: .95em; display: block; }
+
+/* A stage on cream, for the beat where the argument turns from pain to
+   payoff. Re-points the tokens rather than overriding every rule. */
+.stage.light {
+  --brand-fg: var(--brand-ink, #14120e);
+  --brand-muted: #6d6555;
+  background: var(--brand-cream, #f7f3ea);
+  color: var(--brand-fg);
+}
+.stage.light .bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,.05) 1px, transparent 1px);
+}
+.stage.light .bg-vignette { background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.07) 100%); }
+.stage.light .bg-glow { opacity: .16; }
+.stage.light .pill { border-color: rgba(0,0,0,.12); background: rgba(0,0,0,.035); }
+
+.serif { font-family: var(--brand-font-serif, serif); font-weight: 500; letter-spacing: -.01em; }
+
+/* Numbered chip, as used on the HotelBell solution cards. */
+.chip {
+  display: inline-grid; place-items: center;
+  width: 6.4vmin; height: 6.4vmin; border-radius: 1.5vmin;
+  background: color-mix(in srgb, var(--brand-accent) 22%, transparent);
+  color: var(--brand-accent);
+  font-size: var(--t-kicker); font-weight: 700; letter-spacing: 0;
+  flex: none;
+}
+
+/* Left-aligned step / feature rows */
+.stack { display: flex; flex-direction: column; gap: 2.6vmin; width: 100%; }
+.item { display: flex; align-items: flex-start; gap: 2.6vmin; text-align: left; }
+.item .body { font-size: 2.5vmin; }
+.item h2 { font-size: 3.4vmin; }
+
+.hairline { height: 1px; width: 100%; background: currentColor; opacity: .14; }
+
+.icon { width: 1em; height: 1em; display: block; }
+.icon-badge {
+  display: grid; place-items: center; flex: none;
+  width: 7vmin; height: 7vmin; border-radius: 1.8vmin;
+  font-size: 3.4vmin; color: var(--brand-accent);
+  background: color-mix(in srgb, var(--brand-accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-accent) 28%, transparent);
+}

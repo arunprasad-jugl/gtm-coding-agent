@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How it works</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<style>
+  .stage { align-items: flex-start; text-align: left; }
+  .wrap { width: 82%; display: flex; flex-direction: column; gap: 3.4vmin; }
+  .headline { font-size: var(--t-h2); font-weight: 700; letter-spacing: -.02em; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="bg-glow a-drift" style="left:82%;top:22%;opacity:.16"></div>
+    <div class="bg-vignette"></div>
+
+    <div class="wrap a-out">
+      <div class="kicker a-rise" style="--delay:.1s" id="kicker"></div>
+      <div class="headline a-rise" style="--delay:.3s" id="headline"></div>
+      <div class="stack" id="steps"></div>
+    </div>
+  </div>
+<script>
+window.__sceneReady = (async () => {
+  await window.__brandReady;
+  const d = window.__scene || {};
+  document.getElementById("kicker").textContent = d.kicker || "";
+  document.getElementById("headline").textContent = d.headline || "";
+
+  const host = document.getElementById("steps");
+  (d.steps || []).forEach((step, i) => {
+    const row = document.createElement("div");
+    row.className = "item a-slide";
+    row.style.setProperty("--delay", (0.75 + i * 0.42) + "s");
+    row.innerHTML =
+      `<div class="chip"></div><div><h2></h2><p class="body"></p></div>`;
+    row.querySelector(".chip").textContent = String(i + 1).padStart(2, "0");
+    row.querySelector("h2").textContent = step.title;
+    row.querySelector(".body").textContent = step.text;
+    host.appendChild(row);
+  });
+})();
+</script>
+</body>
+</html>

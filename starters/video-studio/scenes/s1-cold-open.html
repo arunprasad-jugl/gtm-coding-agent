@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cold open</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/logo.js"></script>
+<style>
+  .stage { gap: 4vmin; }
+  .time {
+    font-family: var(--brand-font-serif); font-size: 5.4vmin; letter-spacing: .06em;
+    color: var(--brand-accent); display: flex; align-items: center; gap: 2vmin;
+  }
+  .time .dot { width: 1.3vmin; height: 1.3vmin; border-radius: 50%; background: var(--brand-accent); }
+  /* A slow pulse: the phone is ringing and nobody is moving. */
+  @keyframes ring { 0%,100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.25); } }
+  .time .dot { animation: ring 1.5s ease-in-out .3s infinite; }
+  .headline { font-size: var(--t-h1); font-weight: 700; letter-spacing: -.03em; line-height: 1.06; max-width: 100%; }
+  .sub { max-width: 58%; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="bg-glow a-drift"></div>
+    <div class="bg-vignette"></div>
+
+    <div class="a-out" style="display:flex;flex-direction:column;align-items:center;gap:4vmin;width:100%">
+      <div class="time a-fade" style="--delay:.15s"><span class="dot"></span><span id="time"></span></div>
+      <div class="headline" id="headline"></div>
+      <p class="body sub a-rise" id="sub" style="--delay:1.5s"></p>
+    </div>
+  </div>
+<script>
+window.__sceneReady = (async () => {
+  await window.__logoReady;
+  const d = window.__scene || {};
+  document.getElementById("time").textContent = d.time || "";
+  window.__studio.lines(document.getElementById("headline"), d.lines || [], { delay: .55, stagger: .2 });
+  document.getElementById("sub").textContent = d.sub || "";
+})();
+</script>
+</body>
+</html>

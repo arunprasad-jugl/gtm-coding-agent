@@ -1,0 +1,18 @@
+{
+  "name": "video-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Code-driven brand launch videos. HTML/CSS animation -> Playwright frame capture -> ffmpeg encode.",
+  "type": "module",
+  "scripts": {
+    "fonts": "node fonts.js",
+    "preview": "node preview.js",
+    "record": "node record.js",
+    "build": "node build.js",
+    "make": "node record.js && node build.js",
+    "clean": "rm -rf out/frames out/scenes"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

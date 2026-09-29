@@ -1,0 +1,766 @@
+{
+  "_readme": "Edit this file first. `theme` becomes CSS variables (--brand-*). Each video's scenes carry their own copy in `data` and their voiceover in `narration`.",
+  "brand": {
+    "name": "HotelBell",
+    "mark": "",
+    "tagline": "The front desk that never lets a stay walk away.",
+    "url": "hotelbell.ai",
+    "cta": "Book a demo"
+  },
+  "theme": {
+    "bg": "#0b0a08",
+    "bg-2": "#15120d",
+    "fg": "#ffffff",
+    "muted": "#a49a88",
+    "accent": "#d4af6a",
+    "accent-2": "#b08d45",
+    "gold-hi": "#f2dda3",
+    "gold-lo": "#9a7534",
+    "cream": "#f7f3ea",
+    "ink": "#14120e",
+    "font-display": "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+    "font-serif": "'Playfair Display', Georgia, 'Times New Roman', serif",
+    "font-mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
+  },
+  "fontUrl": "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+  "voice": {
+    "model": "en-us-libritts-high",
+    "speaker": 76,
+    "lengthScale": 1.03,
+    "sentenceSilence": 0.3,
+    "gap": 0.22,
+    "leadIn": 0.35,
+    "tail": 0.6,
+    "volume": 1.0,
+    "music": null,
+    "musicGain": 0.16
+  },
+  "videos": [
+    {
+      "id": "reservation",
+      "title": "Reservation",
+      "scenes": [
+        {
+          "file": "s1-cold-open.html",
+          "duration": 9000,
+          "narration": [
+            "It's eleven forty-seven at night. The phone rings three times.",
+            "Nobody's at the desk. She hangs up, and books the hotel across the road."
+          ],
+          "data": {
+            "time": "11:47 PM",
+            "lines": [
+              "Ring three.",
+              "Nobody's at the desk."
+            ],
+            "sub": "She hangs up. And books the property across the road."
+          }
+        },
+        {
+          "file": "s2-cost.html",
+          "duration": 9000,
+          "narration": [
+            "That one call isn't a rounding error.",
+            "Across a year, it's a hundred thousand dollars walking past your front desk."
+          ],
+          "data": {
+            "kicker": "WHAT THAT ACTUALLY COSTS",
+            "counter": {
+              "from": 0,
+              "to": 103900,
+              "prefix": "$",
+              "decimals": 0
+            },
+            "lines": [
+              "walks past your front desk",
+              "every single year."
+            ],
+            "footnote": "Illustrative model for a 120-room extended-stay property. Replace with your own numbers in brand.config.json."
+          }
+        },
+        {
+          "file": "s3-solution.html",
+          "duration": 9000,
+          "narration": [
+            "This is Reservation.",
+            "It answers every inbound call, qualifies the guest, applies your rates, and books the room."
+          ],
+          "data": {
+            "kicker": "EVERY CALL, ANSWERED",
+            "name": "Reservation",
+            "description": "Handles every inbound call, qualifies the guest, applies your rates, and books the room \u2014 even after hours, on hold, or when your desk is full."
+          }
+        },
+        {
+          "file": "s4-how.html",
+          "duration": 12000,
+          "narration": [
+            "It picks up on ring one. After hours, on hold, or when the desk is three deep.",
+            "It quotes only the rates you set, then writes the booking straight into your P M S."
+          ],
+          "data": {
+            "kicker": "HOW IT WORKS",
+            "headline": "Three things, every time the phone rings",
+            "steps": [
+              {
+                "title": "Picks up on ring one",
+                "text": "After hours, on hold, or when the desk is three deep. No voicemail, no queue, no lost guest."
+              },
+              {
+                "title": "Qualifies and quotes",
+                "text": "Asks the right questions and applies your rates and your rules \u2014 never a price you didn't set."
+              },
+              {
+                "title": "Books it into your PMS",
+                "text": "Room held, confirmation sent, folio created. Your team sees it waiting in the morning."
+              }
+            ]
+          }
+        },
+        {
+          "file": "s5-roi.html",
+          "duration": 11000,
+          "narration": [
+            "Twelve missed calls a week. A third of them would have booked.",
+            "That is a hundred and three thousand dollars a year, recovered."
+          ],
+          "data": {
+            "kicker": "THE MATHS",
+            "headline": "One 120-room extended-stay property",
+            "rows": [
+              {
+                "label": "Calls missed or abandoned each week",
+                "value": "12"
+              },
+              {
+                "label": "That would have booked",
+                "value": "35%"
+              },
+              {
+                "label": "Average extended-stay value",
+                "value": "$476"
+              }
+            ],
+            "result": {
+              "label": "Recovered every year",
+              "countTo": 103900,
+              "prefix": "$"
+            },
+            "footnote": "Illustrative model for a 120-room extended-stay property. Replace with your own numbers in brand.config.json."
+          }
+        },
+        {
+          "file": "s6-included.html",
+          "duration": 8000,
+          "narration": [
+            "And it comes with call transfer, a mobile app, recording, transcription,",
+            "and an integration with the P M S you already run."
+          ],
+          "data": {
+            "kicker": "ALSO INCLUDED",
+            "headline": "Everything your front desk already needed",
+            "features": [
+              {
+                "icon": "transfer",
+                "label": "Call transfer",
+                "note": "Hands off to a human, with context"
+              },
+              {
+                "icon": "mobile",
+                "label": "Mobile app",
+                "note": "Your desk, in your pocket"
+              },
+              {
+                "icon": "record",
+                "label": "Recording",
+                "note": "Every call, kept"
+              },
+              {
+                "icon": "transcript",
+                "label": "Transcription",
+                "note": "Searchable, word for word"
+              },
+              {
+                "icon": "pms",
+                "label": "PMS integration",
+                "note": "Live on the system you already run"
+              }
+            ]
+          }
+        },
+        {
+          "file": "s7-cta.html",
+          "duration": 8000,
+          "narration": [
+            "HotelBell. The front desk that never lets a stay walk away.",
+            "Book a demo at hotel bell dot A I."
+          ],
+          "data": {
+            "lines": [
+              "The front desk that never",
+              "lets a stay walk away."
+            ],
+            "cta": "Book a demo",
+            "url": "hotelbell.ai",
+            "trust": [
+              "Runs on your rates. Your rules.",
+              "Live in days on the PMS you already have."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "follow-up",
+      "title": "Follow-up",
+      "scenes": [
+        {
+          "file": "s1-cold-open.html",
+          "duration": 9000,
+          "narration": [
+            "Tuesday, four twelve. You sent her the quote.",
+            "Then Wednesday happened. It's Friday, and nobody has called her back."
+          ],
+          "data": {
+            "time": "TUESDAY, 4:12 PM",
+            "lines": [
+              "You sent the quote.",
+              "Then Wednesday happened."
+            ],
+            "sub": "It's Friday. Nobody has called her back."
+          }
+        },
+        {
+          "file": "s2-cost.html",
+          "duration": 9000,
+          "narration": [
+            "Every quote that goes quiet is a room you already sold once.",
+            "In a year, that's nearly forty thousand dollars sitting in your inbox."
+          ],
+          "data": {
+            "kicker": "THE QUOTES THAT GO QUIET",
+            "counter": {
+              "from": 0,
+              "to": 38600,
+              "prefix": "$",
+              "decimals": 0
+            },
+            "lines": [
+              "already sold once,",
+              "and never chased."
+            ],
+            "footnote": "Illustrative model for a 120-room extended-stay property. Replace with your own numbers in brand.config.json."
+          }
+        },
+        {
+          "file": "s3-solution.html",
+          "duration": 9000,
+          "narration": [
+            "This is Follow-up.",
+            "It calls back every open quote and every unconverted inquiry, and it books the stay."
+          ],
+          "data": {
+            "kicker": "KEEP THE CONVERSATION GOING",
+            "name": "Follow-up",
+            "description": "Calls back every open quote and unconverted inquiry, answers objections, and books the stay \u2014 so the work your team means to do actually gets done."
+          }
+        },
+        {
+          "file": "s4-how.html",
+          "duration": 12000,
+          "narration": [
+            "It works the whole list, not just the ones somebody remembered.",
+            "It answers the real objection on your rules, then closes, or hands you a warm caller."
+          ],
+          "data": {
+            "kicker": "HOW IT WORKS",
+            "headline": "The follow-up your team means to do",
+            "steps": [
+              {
+                "title": "Calls back every open quote",
+                "text": "Not the ones someone remembered on a quiet afternoon. All of them, on schedule."
+              },
+              {
+                "title": "Answers the real objection",
+                "text": "Price, dates, pets, parking. It knows your rules and it holds the line on your rates."
+              },
+              {
+                "title": "Books it, or hands it over",
+                "text": "Closes the stay itself \u2014 or transfers a warm caller with the whole history attached."
+              }
+            ]
+          }
+        },
+        {
+          "file": "s5-roi.html",
+          "duration": 11000,
+          "narration": [
+            "Forty-five open quotes a month. Six in ten never get a second call.",
+            "A quarter of those book when somebody follows up."
+          ],
+          "data": {
+            "kicker": "THE MATHS",
+            "headline": "One 120-room extended-stay property",
+            "rows": [
+              {
+                "label": "Open quotes each month",
+                "value": "45"
+              },
+              {
+                "label": "That never get a second call",
+                "value": "60%"
+              },
+              {
+                "label": "That book when someone calls back",
+                "value": "25%"
+              }
+            ],
+            "result": {
+              "label": "Added every year",
+              "countTo": 38600,
+              "prefix": "$"
+            },
+            "footnote": "Illustrative model for a 120-room extended-stay property. Replace with your own numbers in brand.config.json."
+          }
+        },
+        {
+          "file": "s6-included.html",
+          "duration": 8000,
+          "narration": [
+            "And it comes with call transfer, a mobile app, recording, transcription,",
+            "and an integration with the P M S you already run."
+          ],
+          "data": {
+            "kicker": "ALSO INCLUDED",
+            "headline": "Everything your front desk already needed",
+            "features": [
+              {
+                "icon": "transfer",
+                "label": "Call transfer",
+                "note": "Hands off to a human, with context"
+              },
+              {
+                "icon": "mobile",
+                "label": "Mobile app",
+                "note": "Your desk, in your pocket"
+              },
+              {
+                "icon": "record",
+                "label": "Recording",
+                "note": "Every call, kept"
+              },
+              {
+                "icon": "transcript",
+                "label": "Transcription",
+                "note": "Searchable, word for word"
+              },
+              {
+                "icon": "pms",
+                "label": "PMS integration",
+                "note": "Live on the system you already run"
+              }
+            ]
+          }
+        },
+        {
+          "file": "s7-cta.html",
+          "duration": 8000,
+          "narration": [
+            "HotelBell. The front desk that never lets a stay walk away.",
+            "Book a demo at hotel bell dot A I."
+          ],
+          "data": {
+            "lines": [
+              "The front desk that never",
+              "lets a stay walk away."
+            ],
+            "cta": "Book a demo",
+            "url": "hotelbell.ai",
+            "trust": [
+              "Runs on your rates. Your rules.",
+              "Live in days on the PMS you already have."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rfp",
+      "title": "RFP Response",
+      "scenes": [
+        {
+          "file": "s1-cold-open.html",
+          "duration": 9000,
+          "narration": [
+            "The sixty-room R F P landed Monday morning.",
+            "You answered on Friday. They booked on Tuesday, with somebody faster."
+          ],
+          "data": {
+            "time": "THE 60-ROOM RFP",
+            "lines": [
+              "It landed Monday.",
+              "You answered Friday."
+            ],
+            "sub": "They booked on Tuesday. With somebody faster."
+          }
+        },
+        {
+          "file": "s2-cost.html",
+          "duration": 9000,
+          "narration": [
+            "One block. Sixty rooms, four nights.",
+            "Twenty-eight thousand dollars, lost on response time alone."
+          ],
+          "data": {
+            "kicker": "ONE BLOCK, ONE WEEK LATE",
+            "counter": {
+              "from": 0,
+              "to": 28560,
+              "prefix": "$",
+              "decimals": 0
+            },
+            "lines": [
+              "in a single group block.",
+              "Lost on response time alone."
+            ],
+            "footnote": "60 rooms x 4 nights x $119. Illustrative model for a 120-room extended-stay property. Replace with your own numbers in brand.config.json."
+          }
+        },
+        {
+          "file": "s3-solution.html",
+          "duration": 9000,
+          "narration": [
+            "This is R F P Response.",
+            "It qualifies corporate R F Ps and event inquiries, and prices them against your rules."
+          ],
+          "data": {
+            "kicker": "TURN GROUP INQUIRIES INTO STAYS",
+            "name": "RFP Response",
+            "description": "Qualifies corporate RFPs and event inquiries, prices them against your rules, drafts proposals for one-click approval, and chases planners to a decision."
+          }
+        },
+        {
+          "file": "s4-how.html",
+          "duration": 12000,
+          "narration": [
+            "It reads the dates, the block and the rate ceiling in seconds.",
+            "It prices to your floors, drafts the proposal for one-click approval, and chases the planner to a decision."
+          ],
+          "data": {
+            "kicker": "HOW IT WORKS",
+            "headline": "From inbox to proposal, the same day",
+            "steps": [
+              {
+                "title": "Reads the RFP",
+                "text": "Dates, room block, rate ceiling, concessions \u2014 pulled out in seconds, not on Friday afternoon."
+              },
+              {
+                "title": "Prices it to your rules",
+                "text": "Your floors, your blackout dates, your concessions. Never a rate you didn't approve."
+              },
+              {
+                "title": "Drafts it and chases it",
+                "text": "A proposal ready for one-click approval, then it follows the planner all the way to a decision."
+              }
+            ]
+          }
+        },
+        {
+          "file": "s5-roi.html",
+          "duration": 11000,
+          "narration": [
+            "Nine R F Ps a month. Three lost to somebody faster.",
+            "Win back just one a month, and that's a hundred and seventy thousand dollars a year."
+          ],
+          "data": {
+            "kicker": "THE MATHS",
+            "headline": "One 120-room extended-stay property",
+            "rows": [
+              {
+                "label": "Group RFPs received each month",
+                "value": "9"
+              },
+              {
+                "label": "Lost to a faster response",
+                "value": "3"
+              },
+              {
+                "label": "Average group block",
+                "value": "$14,200"
+              }
+            ],
+            "result": {
+              "label": "Win back one a month",
+              "countTo": 170400,
+              "prefix": "$"
+            },
+            "footnote": "Illustrative model for a 120-room extended-stay property. Replace with your own numbers in brand.config.json."
+          }
+        },
+        {
+          "file": "s6-included.html",
+          "duration": 8000,
+          "narration": [
+            "And it comes with call transfer, a mobile app, recording, transcription,",
+            "and an integration with the P M S you already run."
+          ],
+          "data": {
+            "kicker": "ALSO INCLUDED",
+            "headline": "Everything your front desk already needed",
+            "features": [
+              {
+                "icon": "transfer",
+                "label": "Call transfer",
+                "note": "Hands off to a human, with context"
+              },
+              {
+                "icon": "mobile",
+                "label": "Mobile app",
+                "note": "Your desk, in your pocket"
+              },
+              {
+                "icon": "record",
+                "label": "Recording",
+                "note": "Every call, kept"
+              },
+              {
+                "icon": "transcript",
+                "label": "Transcription",
+                "note": "Searchable, word for word"
+              },
+              {
+                "icon": "pms",
+                "label": "PMS integration",
+                "note": "Live on the system you already run"
+              }
+            ]
+          }
+        },
+        {
+          "file": "s7-cta.html",
+          "duration": 8000,
+          "narration": [
+            "HotelBell. The front desk that never lets a stay walk away.",
+            "Book a demo at hotel bell dot A I."
+          ],
+          "data": {
+            "lines": [
+              "The front desk that never",
+              "lets a stay walk away."
+            ],
+            "cta": "Book a demo",
+            "url": "hotelbell.ai",
+            "trust": [
+              "Runs on your rates. Your rules.",
+              "Live in days on the PMS you already have."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "title": "Review",
+      "scenes": [
+        {
+          "file": "s1-cold-open.html",
+          "duration": 9000,
+          "narration": [
+            "Ten oh four. She checked out, said everything was fine, and left.",
+            "It wasn't fine. Two days later, it's a one-star with your name on it."
+          ],
+          "data": {
+            "time": "CHECKOUT, 10:04 AM",
+            "lines": [
+              "She said it was fine.",
+              "It wasn't."
+            ],
+            "sub": "Two days later, it's a one-star with your name on it."
+          }
+        },
+        {
+          "file": "s2-cost.html",
+          "duration": 9000,
+          "narration": [
+            "There's a window between a quiet checkout and a public review.",
+            "About forty-eight hours. Right now, nobody is using it."
+          ],
+          "data": {
+            "kicker": "THE WINDOW YOU'RE MISSING",
+            "counter": {
+              "from": 0,
+              "to": 48,
+              "suffix": " hours",
+              "decimals": 0
+            },
+            "lines": [
+              "between a quiet checkout",
+              "and a public one-star."
+            ],
+            "footnote": "The gap where a bad stay is still fixable."
+          }
+        },
+        {
+          "file": "s3-solution.html",
+          "duration": 9000,
+          "narration": [
+            "This is Review.",
+            "It calls or texts every checkout, catches unhappy guests, and alerts your manager before the review goes live."
+          ],
+          "data": {
+            "kicker": "MAKE THE LAST IMPRESSION COUNT",
+            "name": "Review",
+            "description": "Calls or texts every checkout, asks for a review, catches unhappy guests, alerts the manager, and offers a fix before a one-star review goes live."
+          }
+        },
+        {
+          "file": "s4-how.html",
+          "duration": 12000,
+          "narration": [
+            "Every checkout is contacted within the hour, while the stay is still fresh.",
+            "Unhappy guests become an alert you can act on. The happy ones get the review link."
+          ],
+          "data": {
+            "kicker": "HOW IT WORKS",
+            "headline": "Reach them before the internet does",
+            "steps": [
+              {
+                "title": "Contacts every checkout",
+                "text": "Every single one, within the hour, while the stay is still fresh enough to fix."
+              },
+              {
+                "title": "Catches the unhappy first",
+                "text": "A bad answer never becomes a public review. It becomes an alert to your duty manager."
+              },
+              {
+                "title": "Sends the happy ones public",
+                "text": "The guests who loved the stay are the ones who get the review link."
+              }
+            ]
+          }
+        },
+        {
+          "file": "s5-roi.html",
+          "duration": 11000,
+          "narration": [
+            "Three hundred and ten checkouts a month. Six percent quietly unhappy.",
+            "Catch seven in ten, and that's a hundred and fifty-six one-star reviews that never happen."
+          ],
+          "data": {
+            "kicker": "THE MATHS",
+            "headline": "One 120-room extended-stay property",
+            "rows": [
+              {
+                "label": "Checkouts each month",
+                "value": "310"
+              },
+              {
+                "label": "Quietly unhappy",
+                "value": "6%"
+              },
+              {
+                "label": "Caught before they post",
+                "value": "70%"
+              }
+            ],
+            "result": {
+              "label": "Bad reviews prevented a year",
+              "countTo": 156,
+              "prefix": ""
+            },
+            "footnote": "Illustrative model for a 120-room extended-stay property. Replace with your own numbers in brand.config.json."
+          }
+        },
+        {
+          "file": "s6-included.html",
+          "duration": 8000,
+          "narration": [
+            "And it comes with call transfer, a mobile app, recording, transcription,",
+            "and an integration with the P M S you already run."
+          ],
+          "data": {
+            "kicker": "ALSO INCLUDED",
+            "headline": "Everything your front desk already needed",
+            "features": [
+              {
+                "icon": "transfer",
+                "label": "Call transfer",
+                "note": "Hands off to a human, with context"
+              },
+              {
+                "icon": "mobile",
+                "label": "Mobile app",
+                "note": "Your desk, in your pocket"
+              },
+              {
+                "icon": "record",
+                "label": "Recording",
+                "note": "Every call, kept"
+              },
+              {
+                "icon": "transcript",
+                "label": "Transcription",
+                "note": "Searchable, word for word"
+              },
+              {
+                "icon": "pms",
+                "label": "PMS integration",
+                "note": "Live on the system you already run"
+              }
+            ]
+          }
+        },
+        {
+          "file": "s7-cta.html",
+          "duration": 8000,
+          "narration": [
+            "HotelBell. The front desk that never lets a stay walk away.",
+            "Book a demo at hotel bell dot A I."
+          ],
+          "data": {
+            "lines": [
+              "The front desk that never",
+              "lets a stay walk away."
+            ],
+            "cta": "Book a demo",
+            "url": "hotelbell.ai",
+            "trust": [
+              "Runs on your rates. Your rules.",
+              "Live in days on the PMS you already have."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "render": {
+    "fps": 30,
+    "defaultFormats": [
+      "landscape"
+    ],
+    "formats": {
+      "landscape": {
+        "width": 1920,
+        "height": 1080,
+        "note": "LinkedIn feed, YouTube, site hero"
+      },
+      "vertical": {
+        "width": 1080,
+        "height": 1920,
+        "note": "Reels, Shorts, LinkedIn video"
+      },
+      "square": {
+        "width": 1080,
+        "height": 1080,
+        "note": "LinkedIn / IG feed"
+      }
+    }
+  },
+  "encode": {
+    "crf": 17,
+    "preset": "slow",
+    "transition": "fade",
+    "transitionDuration": 0.4,
+    "gif": false
+  }
+}

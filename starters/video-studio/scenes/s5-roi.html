@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The maths</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<style>
+  .wrap { width: 74%; display: flex; flex-direction: column; gap: 2.2vmin; }
+  .headline { font-size: var(--t-h2); font-weight: 700; letter-spacing: -.022em; margin-bottom: 1vmin; }
+  .row { display: flex; align-items: baseline; justify-content: space-between; gap: 3vmin; width: 100%; }
+  .row .label { font-size: 2.6vmin; opacity: .72; }
+  .row .val { font-size: 3.4vmin; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .result { margin-top: 1.4vmin; }
+  .result .label { font-size: 3vmin; font-weight: 600; opacity: 1; }
+  .result .val { font-size: 8.5vmin; font-weight: 800; letter-spacing: -.04em; color: var(--brand-accent); }
+  .foot { font-size: 1.85vmin; opacity: .5; margin-top: 1vmin; }
+</style>
+</head>
+<body>
+  <div class="stage light">
+    <div class="bg-grid a-fade" style="--dur:1.2s"></div>
+    <div class="bg-glow a-drift"></div>
+    <div class="bg-vignette"></div>
+
+    <div class="wrap a-out">
+      <div class="kicker a-rise" style="--delay:.1s" id="kicker"></div>
+      <div class="headline a-rise" style="--delay:.28s" id="headline"></div>
+      <div id="rows" style="display:flex;flex-direction:column;gap:1.6vmin"></div>
+      <div class="hairline a-wipe" id="rule"></div>
+      <div class="row result a-rise" id="result">
+        <span class="label"></span><span class="val"></span>
+      </div>
+      <div class="foot a-fade" id="foot"></div>
+    </div>
+  </div>
+<script>
+window.__sceneReady = (async () => {
+  await window.__brandReady;
+  const d = window.__scene || {};
+  const rows = d.rows || [];
+  document.getElementById("kicker").textContent = d.kicker || "";
+  document.getElementById("headline").textContent = d.headline || "";
+  document.getElementById("foot").textContent = d.footnote || "";
+
+  const host = document.getElementById("rows");
+  rows.forEach((r, i) => {
+    const el = document.createElement("div");
+    el.className = "row a-rise";
+    el.style.setProperty("--delay", (0.7 + i * 0.34) + "s");
+    el.innerHTML = `<span class="label"></span><span class="val"></span>`;
+    el.querySelector(".label").textContent = r.label;
+    el.querySelector(".val").textContent = r.value;
+    host.appendChild(el);
+  });
+
+  // The rule and the result land after the last input line, so the total
+  // reads as a conclusion rather than another row.
+  const after = 0.7 + rows.length * 0.34;
+  document.getElementById("rule").style.setProperty("--delay", after + "s");
+  const result = document.getElementById("result");
+  result.style.setProperty("--delay", (after + 0.25) + "s");
+  result.querySelector(".label").textContent = (d.result || {}).label || "";
+
+  const out = result.querySelector(".val");
+  const r = d.result || {};
+  if (r.countTo != null) {
+    const start = (after + 0.3) * 1000;
+    window.__studio.onSeek((t) => {
+      const n = window.__studio.tween(t, { from: r.countFrom ?? 0, to: r.countTo, delay: start, dur: 1400, ease: "outExpo" });
+      out.textContent = (r.prefix || "") + Math.round(n).toLocaleString("en-US") + (r.suffix || "");
+    });
+  } else {
+    out.textContent = r.value || "";
+  }
+})();
+</script>
+</body>
+</html>

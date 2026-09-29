@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Video Studio — preview</title>
+<style>
+  :root { --ui-bg:#0b0b10; --ui-panel:#14141d; --ui-line:#26263a; --ui-fg:#e9e9f2; --ui-muted:#8a8aa0; --ui-accent:#6d5efc; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--ui-bg); color:var(--ui-fg); font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+         height:100vh; display:grid; grid-template-rows:auto 1fr auto; gap:16px; padding:18px; }
+  header { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  h1 { font-size:15px; font-weight:600; letter-spacing:-.01em; }
+  h1 span { color:var(--ui-muted); font-weight:400; }
+  select, button { background:var(--ui-panel); color:var(--ui-fg); border:1px solid var(--ui-line);
+                   border-radius:8px; padding:7px 12px; font:inherit; font-size:13px; cursor:pointer; }
+  button:hover, select:hover { border-color:var(--ui-accent); }
+  button.primary { background:var(--ui-accent); border-color:var(--ui-accent); font-weight:600; }
+  .spacer { flex:1; }
+  .stage-wrap { display:grid; place-items:center; min-height:0; }
+  .frame { background:#000; border:1px solid var(--ui-line); border-radius:12px; overflow:hidden;
+           box-shadow:0 24px 60px -20px rgba(0,0,0,.9); max-width:100%; max-height:100%; }
+  iframe { display:block; border:0; transform-origin:top left; }
+  footer { display:flex; align-items:center; gap:14px; }
+  input[type=range] { flex:1; accent-color:var(--ui-accent); height:22px; }
+  .time { font-variant-numeric:tabular-nums; color:var(--ui-muted); font-size:13px; min-width:110px; }
+  kbd { background:var(--ui-panel); border:1px solid var(--ui-line); border-bottom-width:2px;
+        border-radius:5px; padding:1px 6px; font-size:11px; color:var(--ui-muted); }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Video Studio <span id="brandName"></span></h1>
+    <select id="scene"></select>
+    <select id="format"></select>
+    <div class="spacer"></div>
+    <span class="time"><kbd>space</kbd> play · <kbd>←</kbd><kbd>→</kbd> step</span>
+    <button id="reload">Reload scene</button>
+  </header>
+
+  <div class="stage-wrap"><div class="frame" id="frame"><iframe id="view" title="scene"></iframe></div></div>
+
+  <footer>
+    <button class="primary" id="play">Play</button>
+    <input type="range" id="scrub" min="0" max="1000" value="0" step="1">
+    <span class="time" id="time">0.00s / 0.00s</span>
+  </footer>
+
+<script type="module">
+const cfg = await (await fetch("brand.config.json", { cache: "no-store" })).json();
+// Scene lengths come from the narration once voice.js has run.
+const voice = await fetch("out/voice/manifest.json", { cache: "no-store" })
+  .then((r) => (r.ok ? r.json() : null))
+  .catch(() => null);
+
+const $ = (id) => document.getElementById(id);
+$("brandName").textContent = "· " + cfg.brand.name;
+
+// Flatten every video's scenes into one picker.
+const videos = cfg.videos?.length ? cfg.videos : [{ id: "main", title: "main", scenes: cfg.scenes }];
+const items = [];
+for (const v of videos) {
+  v.scenes.forEach((sc, i) => {
+    const name = sc.file.replace(/\.html$/, "");
+    const spoken = voice?.videos?.[v.id]?.scenes?.find((x) => x.name === name);
+    items.push({
+      label: `${v.title || v.id} — ${name}`,
+      url: `scenes/${sc.file}?video=${encodeURIComponent(v.id)}&scene=${i}`,
+      duration: spoken?.duration ?? sc.duration,
+    });
+  });
+}
+items.forEach((it, i) => $("scene").add(new Option(it.label, String(i))));
+
+for (const [name, f] of Object.entries(cfg.render.formats)) {
+  $("format").add(new Option(`${name} — ${f.width}x${f.height}`, name));
+}
+$("format").value = cfg.render.defaultFormats[0] || "landscape";
+
+let duration = 0, playing = false, t = 0, rafId = null, lastTick = 0;
+
+async function load() {
+  const item = items[Number($("scene").value)];
+  duration = item.duration;
+
+  const { width, height } = cfg.render.formats[$("format").value];
+  const view = $("view");
+  view.width = width; view.height = height;
+  view.style.width = width + "px"; view.style.height = height + "px";
+
+  // Scale the iframe down to fit the window without changing the layout it
+  // renders at — the scene must lay out at true output size or vmin lies.
+  const box = document.querySelector(".stage-wrap").getBoundingClientRect();
+  const scale = Math.min((box.width - 8) / width, (box.height - 8) / height, 1);
+  view.style.transform = `scale(${scale})`;
+  $("frame").style.width = width * scale + "px";
+  $("frame").style.height = height * scale + "px";
+
+  await new Promise((resolve) => {
+    view.onload = resolve;
+    view.src = item.url + "&cachebust=" + Date.now();
+  });
+
+  await view.contentWindow.__prepare(duration);
+  seek(0);
+}
+
+function seek(ms) {
+  t = Math.max(0, Math.min(duration, ms));
+  $("view").contentWindow.__seek(t);
+  $("scrub").value = String((t / duration) * 1000);
+  $("time").textContent = `${(t / 1000).toFixed(2)}s / ${(duration / 1000).toFixed(2)}s`;
+}
+
+function tick(now) {
+  if (!playing) return;
+  const dt = now - lastTick;
+  lastTick = now;
+  if (t >= duration) { seek(0); } else { seek(t + dt); }
+  rafId = requestAnimationFrame(tick);
+}
+
+function toggle() {
+  playing = !playing;
+  $("play").textContent = playing ? "Pause" : "Play";
+  if (playing) { lastTick = performance.now(); rafId = requestAnimationFrame(tick); }
+  else { cancelAnimationFrame(rafId); }
+}
+
+$("play").onclick = toggle;
+$("reload").onclick = load;
+$("scene").onchange = load;
+$("format").onchange = load;
+$("scrub").oninput = (e) => { if (playing) toggle(); seek((e.target.value / 1000) * duration); };
+addEventListener("resize", load);
+addEventListener("keydown", (e) => {
+  if (e.code === "Space") { e.preventDefault(); toggle(); }
+  if (e.code === "ArrowRight") { if (playing) toggle(); seek(t + 1000 / cfg.render.fps); }
+  if (e.code === "ArrowLeft")  { if (playing) toggle(); seek(t - 1000 / cfg.render.fps); }
+});
+
+await load();
+</script>
+</body>
+</html>

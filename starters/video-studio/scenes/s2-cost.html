@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The cost</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<style>
+  .value {
+    font-size: 15vmin; font-weight: 800; letter-spacing: -.05em; line-height: 1;
+    font-variant-numeric: tabular-nums; color: var(--brand-accent);
+  }
+  .headline { font-size: var(--t-h2); font-weight: 600; max-width: 100%; line-height: 1.2; }
+  .foot { font-size: 1.85vmin; opacity: .45; margin-top: 2vmin; max-width: 64%; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="bg-glow a-drift" style="opacity:.2"></div>
+    <div class="bg-vignette"></div>
+
+    <div class="a-out" style="display:flex;flex-direction:column;align-items:center;gap:2vmin;width:100%">
+      <div class="kicker a-rise" style="--delay:.1s" id="kicker"></div>
+      <div class="value a-pop" style="--delay:.35s;--dur:.8s" id="value">0</div>
+      <div class="headline" id="headline"></div>
+      <div class="body foot a-fade" style="--delay:2.4s" id="foot"></div>
+    </div>
+  </div>
+<script>
+window.__sceneReady = (async () => {
+  await window.__brandReady;
+  const d = window.__scene || {};
+  const c = d.counter || { from: 0, to: 0 };
+  document.getElementById("kicker").textContent = d.kicker || "";
+  document.getElementById("foot").textContent = d.footnote || "";
+  window.__studio.lines(document.getElementById("headline"), d.lines || [], { delay: 1.5, stagger: .16 });
+
+  const out = document.getElementById("value");
+  // The number climbing is the whole point of the beat — make it a pure
+  // function of t so it scrubs cleanly in preview.
+  window.__studio.onSeek((t) => {
+    const n = window.__studio.tween(t, { from: c.from ?? 0, to: c.to ?? 0, delay: 500, dur: 1900, ease: "outExpo" });
+    out.textContent = (c.prefix || "") + fmt(n, c.decimals ?? 0) + (c.suffix || "");
+  });
+
+  function fmt(n, dp) {
+    return n.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+  }
+})();
+</script>
+</body>
+</html>

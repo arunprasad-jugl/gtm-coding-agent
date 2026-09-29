@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Also included</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/icons.js"></script>
+<style>
+  .wrap { width: 84%; display: flex; flex-direction: column; align-items: center; gap: 3vmin; }
+  .headline { font-size: var(--t-h2); font-weight: 700; letter-spacing: -.022em; text-align: center; }
+  .grid { display: flex; flex-wrap: wrap; gap: 2.2vmin; justify-content: center; }
+  .feat {
+    display: flex; align-items: center; gap: 2vmin;
+    padding: 2vmin 3vmin 2vmin 2vmin;
+    border: 1px solid color-mix(in srgb, var(--brand-accent) 22%, transparent);
+    border-radius: 2vmin;
+    background: color-mix(in srgb, var(--brand-accent) 7%, transparent);
+    text-align: left;
+  }
+  .feat .label { font-size: 2.5vmin; font-weight: 600; line-height: 1.2; }
+  .feat .note { font-size: 1.9vmin; opacity: .62; margin-top: .3vmin; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="bg-glow a-drift" style="opacity:.18"></div>
+    <div class="bg-grid a-fade" style="--dur:1.2s"></div>
+    <div class="bg-vignette"></div>
+
+    <div class="wrap a-out">
+      <div class="kicker a-rise" style="--delay:.1s" id="kicker"></div>
+      <div class="headline a-rise" style="--delay:.3s" id="headline"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+<script>
+window.__sceneReady = (async () => {
+  await window.__brandReady;
+  const d = window.__scene || {};
+  document.getElementById("kicker").textContent = d.kicker || "";
+  document.getElementById("headline").textContent = d.headline || "";
+
+  const host = document.getElementById("grid");
+  (d.features || []).forEach((f, i) => {
+    const el = document.createElement("div");
+    el.className = "feat a-pop";
+    el.style.setProperty("--delay", (0.7 + i * 0.16) + "s");
+    el.style.setProperty("--dur", ".7s");
+    el.innerHTML = `<div class="icon-badge">${window.__icon(f.icon)}</div>
+      <div><div class="label"></div><div class="note"></div></div>`;
+    el.querySelector(".label").textContent = f.label;
+    el.querySelector(".note").textContent = f.note || "";
+    host.appendChild(el);
+  });
+})();
+</script>
+</body>
+</html>
