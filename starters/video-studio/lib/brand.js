@@ -25,21 +25,13 @@ window.__brandReady = (async () => {
 
   // 2. webfont — prefer the local copy from `node fonts.js`, so a render
   //    never silently falls back because the network was slow or proxied.
-  const localFonts = await fetch("../lib/fonts.css", { method: "HEAD" })
-    .then((r) => r.ok)
-    .catch(() => false);
-  const fontHref = localFonts ? "../lib/fonts.css" : cfg.fontUrl;
-
-  if (fontHref) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = fontHref;
-    document.head.appendChild(link);
-    await new Promise((resolve) => {
-      link.addEventListener("load", resolve, { once: true });
-      link.addEventListener("error", resolve, { once: true }); // fall back to system stack
-      setTimeout(resolve, 8000);
-    });
+  //    Probe by actually loading it: a HEAD request gets aborted by Chromium
+  //    often enough that it's useless as an existence check, and a <link>
+  //    has to be resolved relative to lib/ anyway for its url() references.
+  const usedLocal = await loadStylesheet("../lib/fonts.css");
+  if (!usedLocal && cfg.fontUrl) {
+    const usedCdn = await loadStylesheet(cfg.fontUrl);
+    if (!usedCdn) console.warn("[brand] no webfont loaded — falling back to the system stack");
   }
 
   // The fetch can resolve before <body> is parsed, so wait for the DOM
@@ -77,3 +69,16 @@ function get(obj, path) {
   return path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj);
 }
 window.__brandGet = get;
+
+/** Append a stylesheet and report whether it actually loaded. */
+function loadStylesheet(href) {
+  return new Promise((resolve) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.addEventListener("load", () => resolve(true), { once: true });
+    link.addEventListener("error", () => { link.remove(); resolve(false); }, { once: true });
+    setTimeout(() => resolve(false), 8000);
+    document.head.appendChild(link);
+  });
+}

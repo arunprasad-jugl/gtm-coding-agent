@@ -24,8 +24,8 @@
   },
   "fontUrl": "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
   "voice": {
-    "model": "en-us-libritts-high",
-    "speaker": 76,
+    "model": "en-us-lessac-medium",
+    "speaker": null,
     "lengthScale": 1.03,
     "sentenceSilence": 0.3,
     "gap": 0.22,
@@ -729,6 +729,112 @@
               "Live in days on the PMS you already have."
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "ring-three",
+      "title": "Ring Three (film)",
+      "beds": [
+        {
+          "cue": "room",
+          "gain": 0.4,
+          "from": 0,
+          "to": 64,
+          "fadeIn": 1.5,
+          "fadeOut": 5
+        },
+        {
+          "cue": "drone",
+          "gain": 0.36,
+          "from": 2.5,
+          "to": 38,
+          "fadeIn": 3.5,
+          "fadeOut": 6
+        }
+      ],
+      "scenes": [
+        {
+          "file": "f1-ring.html",
+          "minDuration": 22000,
+          "narrationStart": 16200,
+          "narration": [
+            "Eighteen seconds.",
+            "That is how long it takes to lose a three-week stay."
+          ],
+          "sfx": [
+            {
+              "cue": "ring",
+              "at": 1500
+            },
+            {
+              "cue": "ring",
+              "at": 7500
+            },
+            {
+              "cue": "ring",
+              "at": 13500,
+              "trim": 1.1
+            }
+          ]
+        },
+        {
+          "file": "f2-log.html",
+          "minDuration": 16000,
+          "narration": [
+            "By morning there were nine of them. Nine calls, and nobody saw a single one.",
+            "Across a year, that is a hundred and three thousand dollars."
+          ],
+          "sfx": [
+            {
+              "cue": "impact",
+              "at": 0,
+              "gain": 0.55
+            }
+          ]
+        },
+        {
+          "file": "f3-replay.html",
+          "minDuration": 24000,
+          "narrationStart": 900,
+          "narration": [
+            "The same night. The same call.",
+            "This time, somebody answers.",
+            "Three weeks, quoted on your rates, and booked straight into your P M S."
+          ],
+          "sfx": [
+            {
+              "cue": "ring",
+              "at": 1400,
+              "trim": 1.4
+            },
+            {
+              "cue": "connect",
+              "at": 2900,
+              "gain": 0.95
+            },
+            {
+              "cue": "confirm",
+              "at": 18200,
+              "gain": 1.0
+            }
+          ]
+        },
+        {
+          "file": "f4-turn.html",
+          "minDuration": 10000,
+          "narration": [
+            "One call was worth four hundred and seventy six dollars.",
+            "Multiply that by every night nobody picked up."
+          ]
+        },
+        {
+          "file": "f5-cta.html",
+          "minDuration": 8000,
+          "narration": [
+            "HotelBell. The front desk that never lets a stay walk away.",
+            "Book a demo at hotel bell dot A I."
+          ]
         }
       ]
     }

@@ -85,7 +85,8 @@ for (const videoId of videoIds) {
     const silent = path.join(ROOT, "out", `.${slug}-${videoId}-${format}.silent.mp4`);
     const total = totalSeconds(clips, xfade);
 
-    const track = await buildNarration(videoId, clips, total);
+    const videoCfg = (cfg.videos ?? []).find((v) => v.id === videoId);
+    const track = await buildAudio(videoId, videoCfg, clips, total);
     const joined = track ? silent : final;
 
     if (clips.length === 1) {
@@ -112,7 +113,7 @@ for (const videoId of videoIds) {
     }
 
     const mb = (fs.statSync(final).size / 1e6).toFixed(1);
-    console.log(`  \x1b[32m▶\x1b[0m ${path.relative(ROOT, final)}  ${total.toFixed(1)}s  ${mb} MB${track ? "  + voice" : ""}`);
+    console.log(`  \x1b[32m▶\x1b[0m ${path.relative(ROOT, final)}  ${total.toFixed(1)}s  ${mb} MB${track ? "  + audio" : ""}`);
 
     // --- 4. optional gif --------------------------------------------------
     if (args.gif || enc.gif) {
@@ -135,62 +136,88 @@ console.log("\nDone. Files are in out/.");
 /* -------------------------------------------------------------------- */
 
 /**
- * Lay every spoken line onto one track at its absolute position in the cut.
+ * Build the finished audio: narration, sound cues, and beds, all laid onto
+ * one timeline.
  *
- * Each line knows its offset inside its own scene; this adds the scene's
- * start in the finished video. Crossfades overlap neighbouring clips, so
- * every transition pulls the rest of the timeline `xfade` seconds earlier —
- * miss that and the voice drifts further out of sync with every scene.
+ * Each line and cue knows its offset inside its own scene; this adds the
+ * scene's start in the finished video. Crossfades overlap neighbouring clips,
+ * so every transition pulls the rest of the timeline `xfade` seconds earlier —
+ * miss that and the whole track drifts further out of sync with every scene.
  */
-async function buildNarration(videoId, clips, totalSecs) {
+async function buildAudio(videoId, videoCfg, clips, totalSecs) {
   const scenes = voice?.videos?.[videoId]?.scenes;
-  if (!scenes) return null;
 
-  const inputs = [];
-  const filters = [];
+  const inputs = [];   // [{args, filter}] — args go before -filter_complex
+  const labels = [];
+
+  const add = (args, filter) => {
+    const i = inputs.length;
+    inputs.push({ args, filter: filter(i, `m${i}`) });
+    labels.push(`[m${i}]`);
+  };
+
+  // --- narration + per-scene cues, positioned scene by scene ---------------
   let offset = 0;
-
   for (const clip of clips) {
-    const spoken = scenes.find((s) => s.name === clip.name);
+    const sceneCfg = (videoCfg?.scenes ?? []).find(
+      (sc) => sc.file.replace(/\.html$/, "") === clip.name
+    );
+
+    const spoken = scenes?.find((s) => s.name === clip.name);
     for (const line of spoken?.lines ?? []) {
       const at = Math.round((offset + line.start / 1000) * 1000);
-      const i = inputs.length;
-      inputs.push(path.join(ROOT, line.file));
-      filters.push(`[${i}:a]adelay=${at}|${at}[a${i}]`);
+      add(["-i", path.join(ROOT, line.file)],
+          (i, out) => `[${i}:a]adelay=${at}|${at}[${out}]`);
     }
+
+    for (const cue of sceneCfg?.sfx ?? []) {
+      const file = cueFile(cue.cue);
+      const at = Math.round((offset + (cue.at ?? 0) / 1000) * 1000);
+      const trim = cue.trim ? `atrim=duration=${cue.trim},asetpts=PTS-STARTPTS,` : "";
+      add(["-i", file],
+          (i, out) => `[${i}:a]${trim}volume=${cue.gain ?? 1}` +
+                      `,afade=t=out:st=${Math.max(0, (cue.trim ?? 99) - 0.06).toFixed(3)}:d=0.06` +
+                      `,adelay=${at}|${at}[${out}]`);
+    }
+
     offset += clip.seconds - xfade;
   }
+
+  // --- beds: room tone, drone, music — looped and placed absolutely --------
+  for (const bed of videoCfg?.beds ?? []) {
+    const from = bed.from ?? 0;
+    const to = Math.min(bed.to ?? totalSecs, totalSecs);
+    const len = Math.max(0, to - from);
+    if (!len) continue;
+
+    const fadeIn = bed.fadeIn ?? 1.5;
+    const fadeOut = bed.fadeOut ?? 2;
+    const at = Math.round(from * 1000);
+
+    add(["-stream_loop", "-1", "-i", cueFile(bed.cue)],
+        (i, out) =>
+          `[${i}:a]atrim=duration=${len.toFixed(3)},asetpts=PTS-STARTPTS` +
+          `,volume=${bed.gain ?? 0.2}` +
+          `,afade=t=in:d=${fadeIn}` +
+          `,afade=t=out:st=${Math.max(0, len - fadeOut).toFixed(3)}:d=${fadeOut}` +
+          `,adelay=${at}|${at}[${out}]`);
+  }
+
   if (!inputs.length) return null;
-
-  const music = cfg.voice?.music ? path.resolve(ROOT, cfg.voice.music) : null;
-  if (music && !fs.existsSync(music)) {
-    console.error(`error: voice.music points at "${cfg.voice.music}" but that file doesn't exist.`);
-    process.exit(1);
-  }
-
-  const labels = inputs.map((_, i) => `[a${i}]`).join("");
-  let chain = `${filters.join(";")};${labels}amix=inputs=${inputs.length}:normalize=0:dropout_transition=0[voice]`;
-  let out = "[voice]";
-
-  if (music) {
-    const m = inputs.length;
-    const gain = cfg.voice.musicGain ?? 0.18;
-    const fade = Math.max(0, totalSecs - 2).toFixed(2);
-    // Bed sits well under the voice and fades out with the last scene.
-    chain += `;[${m}:a]volume=${gain},afade=t=out:st=${fade}:d=2[bed];[voice][bed]amix=inputs=2:normalize=0[mixed]`;
-    out = "[mixed]";
-  }
 
   // Pad with silence to the full length. amix ends with its last input, and
   // -t truncates but never extends — without apad the track is short and the
   // -shortest mux then clips the tail off the final scene.
-  chain += `;${out}apad[out]`;
+  const chain =
+    inputs.map((x) => x.filter).join(";") +
+    `;${labels.join("")}amix=inputs=${inputs.length}:normalize=0:dropout_transition=0[mixed]` +
+    `;[mixed]apad[out]`;
 
   const track = path.join(ROOT, "out", "voice", `${videoId}-mix.wav`);
+  fs.mkdirSync(path.dirname(track), { recursive: true });
   await ffmpeg([
     "-y",
-    ...inputs.flatMap((f) => ["-i", f]),
-    ...(music ? ["-stream_loop", "-1", "-i", music] : []),
+    ...inputs.flatMap((x) => x.args),
     "-filter_complex", chain,
     "-map", "[out]",
     "-t", totalSecs.toFixed(3),
@@ -198,6 +225,19 @@ async function buildNarration(videoId, clips, totalSecs) {
     track,
   ]);
   return track;
+}
+
+/** Resolve a cue name to a file: sfx/<name>.wav, or a path from the config. */
+function cueFile(name) {
+  const direct = path.resolve(ROOT, name);
+  if (fs.existsSync(direct) && fs.statSync(direct).isFile()) return direct;
+
+  const sfx = path.join(ROOT, "sfx", `${name}.wav`);
+  if (!fs.existsSync(sfx)) {
+    console.error(`error: sound cue "${name}" not found. Run \`node sound.js\`, or point at a file.`);
+    process.exit(1);
+  }
+  return sfx;
 }
 
 /**

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act I · Ring three</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<link rel="stylesheet" href="../lib/cinema.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/cinema.js"></script>
+<script src="../lib/lobby.js"></script>
+<style>
+  .stage { padding: 0; }
+  .chip {
+    position: absolute; z-index: 58; left: 50%; top: 58%; translate: -50% 0;
+    display: flex; align-items: center; gap: 1.6vmin;
+    padding: 1.4vmin 3vmin; border-radius: 100vmax;
+    border: 1px solid rgba(255,255,255,.14); background: rgba(0,0,0,.55);
+    backdrop-filter: blur(1vmin);
+    font-family: var(--brand-font-mono); font-size: 1.9vmin; letter-spacing: .16em;
+    width: auto; height: auto; place-items: initial;
+  }
+  .card .line-1 { max-width: 80vmin; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="env" id="env"></div>
+    <div class="grain" id="grain"></div>
+
+    <div class="timecode"><span class="rec"></span><span id="tc"></span></div>
+
+    <div class="ring-log" id="rings">
+      <div class="r">RING 01</div><div class="r">RING 02</div><div class="r">RING 03</div>
+    </div>
+
+    <div class="chip" id="ended" style="opacity:0">CALL ENDED &nbsp;·&nbsp; 00:18</div>
+
+    <div class="card" id="card" style="opacity:0">
+      <div class="line-1">She booked the property<br>across the road.</div>
+    </div>
+
+    <div class="bars"></div>
+  </div>
+
+<script>
+// Timings are the sound design's, not the picture's: the ring cue fires at
+// 1.5s, 7.5s and 13.5s (2 on / 4 off, the real cadence), and the third is
+// cut off mid-ring because she gives up. Everything visual hangs off those.
+const RINGS = [1500, 7500, 13500];
+const CUT   = 14600;
+
+window.__sceneReady = (async () => {
+  await window.__brandReady;
+  const D = window.__sceneDuration || 22000;
+
+  window.__lobby(document.getElementById("env"));
+  window.__cinema.camera(D);
+  window.__cinema.grain(document.getElementById("grain"));
+  window.__cinema.timecode(document.getElementById("tc"), "23:47:02");
+  window.__cinema.rings(document.getElementById("rings"), RINGS);
+  window.__cinema.window(document.getElementById("ended"), 15200, 17600);
+  window.__cinema.window(document.getElementById("card"), 17800);
+
+  // The screen is the brightest thing in the room, and only while it rings.
+  const phone = document.querySelector(".phone");
+  window.__studio.onSeek((t) => {
+    const ringing = RINGS.some((at, i) => {
+      const len = i === RINGS.length - 1 ? CUT - at : 2000;
+      return t >= at && t < at + len;
+    });
+    phone.classList.toggle("lit", ringing);
+  });
+})();
+</script>
+</body>
+</html>

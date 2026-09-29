@@ -1,5 +1,6 @@
 node_modules/
 out/
 voices/
+sfx/
 lib/fonts/
 lib/fonts.css

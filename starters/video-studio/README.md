@@ -20,8 +20,12 @@ preview.html        scrub any scene in the browser while you edit
 ```bash
 npm install
 node fonts.js          # optional: pull webfonts local so renders are offline-safe
-node setup-voice.js    # optional: ~120 MB neural voice, runs on CPU
+node setup-voice.js    # optional: ~60-120 MB neural voice, runs on CPU
+node sound.js          # optional: synthesize the sound-design cues into sfx/
 ```
+
+`fonts/`, `voices/` and `sfx/` are all generated and git-ignored — re-run
+those three commands after a fresh clone.
 
 `ffmpeg` must be on your PATH — `brew install ffmpeg`,
 `sudo apt install ffmpeg`, or `winget install Gyan.FFmpeg`.

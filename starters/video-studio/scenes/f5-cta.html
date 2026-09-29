@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act V · Close</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<link rel="stylesheet" href="../lib/cinema.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/cinema.js"></script>
+<script src="../lib/logo.js"></script>
+<style>
+  .lockup { font-size: 7.6vmin; }
+  @keyframes lockIn { from { opacity: 0; transform: translateY(1.8vmin) scale(.95); } to { opacity: 1; transform: none; } }
+  .lockup { animation: lockIn 1s cubic-bezier(.16,1,.3,1) .1s; }
+  .headline { font-size: var(--t-h2); font-weight: 700; letter-spacing: -.024em; line-height: 1.16; }
+  .btn { background: linear-gradient(100deg, var(--brand-accent), var(--brand-gold-hi, #f2dda3)); color: #191510; }
+  .trust { display: flex; gap: 4vmin; flex-wrap: wrap; justify-content: center; margin-top: 1.2vmin; }
+  .trust span { font-size: 2vmin; opacity: .6; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="bg-glow a-drift"></div>
+    <div class="bg-grid a-fade" style="--dur:1.3s"></div>
+    <div class="bg-vignette"></div>
+    <div class="grain" id="grain"></div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2.8vmin;width:100%;z-index:10">
+      <div class="lockup" data-wordmark></div>
+      <div class="headline" id="headline"></div>
+      <div class="a-pop" style="--delay:1.6s;--dur:.8s"><div class="btn">Book a demo</div></div>
+      <div class="url a-fade" style="--delay:2s">hotelbell.ai</div>
+      <div class="trust a-fade" style="--delay:2.3s">
+        <span>Runs on your rates. Your rules.</span>
+        <span>Live in days on the PMS you already have.</span>
+      </div>
+    </div>
+
+    <div class="bars static"></div>
+  </div>
+
+<script>
+window.__sceneReady = (async () => {
+  await window.__logoReady;
+  window.__cinema.grain(document.getElementById("grain"));
+  window.__studio.lines(document.getElementById("headline"),
+    ["The front desk that never", "lets a stay walk away."], { delay: .9, stagger: .16 });
+})();
+</script>
+</body>
+</html>

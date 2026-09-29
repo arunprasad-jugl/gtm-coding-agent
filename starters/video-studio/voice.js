@@ -41,7 +41,14 @@ const videos = selectVideos(cfg, args.video);
 const outRoot = path.join(ROOT, "out", "voice");
 fs.mkdirSync(outRoot, { recursive: true });
 
-const manifest = { model: v.model, leadIn, gap, tail, videos: {} };
+
+// Merge into any existing manifest: running with --video must not wipe the
+// timings of the videos it didn't touch.
+const manifestFile = path.join(outRoot, "manifest.json");
+const previous = fs.existsSync(manifestFile)
+  ? JSON.parse(fs.readFileSync(manifestFile, "utf8"))
+  : { videos: {} };
+const manifest = { model: v.model, leadIn, gap, tail, videos: { ...previous.videos } };
 
 for (const video of videos) {
   console.log(`\n\x1b[1m${video.id}\x1b[0m`);
@@ -61,7 +68,9 @@ for (const video of videos) {
     }
 
     const clips = [];
-    let cursor = leadIn * 1000;
+    // A scene can hold the voice back — the cold open plays sixteen seconds
+    // of ringing phone before anyone says a word.
+    let cursor = scene.narrationStart ?? leadIn * 1000;
 
     for (let i = 0; i < lines.length; i++) {
       const wav = path.join(dir, `${name}-${String(i + 1).padStart(2, "0")}.wav`);
@@ -71,8 +80,12 @@ for (const video of videos) {
       cursor += dur + gap * 1000;
     }
 
-    // Drop the trailing gap, then add the tail pad.
-    const duration = Math.round(cursor - gap * 1000 + tail * 1000);
+    // Drop the trailing gap, then add the tail pad. A scene may also declare
+    // a floor it must hold to, for sound design or a held beat.
+    const duration = Math.max(
+      Math.round(cursor - gap * 1000 + tail * 1000),
+      scene.minDuration ?? 0
+    );
     manifest.videos[video.id].scenes.push({ name, duration, silent: false, lines: clips });
 
     const words = lines.join(" ").split(/\s+/).length;
@@ -86,7 +99,7 @@ for (const video of videos) {
   console.log(`  total ${(total / 1000).toFixed(1)}s`);
 }
 
-fs.writeFileSync(path.join(outRoot, "manifest.json"), JSON.stringify(manifest, null, 2));
+fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
 console.log(`\n→ out/voice/manifest.json\nNext: node record.js`);
 
 /* -------------------------------------------------------------------- */

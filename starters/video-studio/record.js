@@ -49,7 +49,16 @@ const browser = await chromium.launch({
   args: ["--force-color-profile=srgb", "--disable-lcd-text", "--hide-scrollbars"],
 });
 
-const manifest = { fps, scale, createdAt: new Date().toISOString(), videos: {} };
+// Merge into any existing manifest: recording one video with --video must
+// not drop the others, or build.js can no longer find their frames.
+const manifestFile = path.join(ROOT, "out", "manifest.json");
+const previous = fs.existsSync(manifestFile)
+  ? JSON.parse(fs.readFileSync(manifestFile, "utf8"))
+  : { videos: {} };
+const manifest = {
+  fps, scale, createdAt: new Date().toISOString(),
+  videos: { ...previous.videos },
+};
 const started = Date.now();
 
 try {
@@ -75,7 +84,9 @@ try {
       for (const scene of video.scenes) {
         const name = scene.file.replace(/\.html$/, "");
         const spoken = voice?.videos?.[video.id]?.scenes?.find((s) => s.name === name);
-        const duration = spoken?.duration ?? scene.duration;
+        // Narration normally sets the length, but a scene built around sound
+        // design or a held beat needs a floor the voice can't shorten.
+        const duration = Math.max(spoken?.duration ?? scene.duration, scene.minDuration ?? 0);
 
         const dir = path.join(ROOT, "out", "frames", video.id, format, name);
         fs.rmSync(dir, { recursive: true, force: true });
@@ -140,7 +151,7 @@ try {
     }
   }
 
-  fs.writeFileSync(path.join(ROOT, "out", "manifest.json"), JSON.stringify(manifest, null, 2));
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
   console.log(`\nRecorded in ${((Date.now() - started) / 1000).toFixed(1)}s → out/frames/`);
   console.log("Next: node build.js");
 } finally {
