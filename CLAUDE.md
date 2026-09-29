@@ -83,6 +83,7 @@ When the user returns after setup:
 - **"create content"** → Load their voice profile first, then assist with content
 - **"add a client"** → Use `templates/partner/` to scaffold a new client folder (agency mode)
 - **"build dashboard"** → Guide them to Chapter 11 and `starters/signals-dashboard (Ch 11) or nexus-intel (Ch 12)/`
+- **"make a video"** → Use `starters/video-studio/`. Scenes are HTML/CSS, Playwright captures frames, Piper narrates, ffmpeg encodes. Narration sets the timing, so run `voice.js` before `record.js`.
 - **"set up supabase"** → Walk through schema setup from `starters/signals-dashboard/schema/`
 - **"deploy dashboard"** → Vercel deployment from the starter
 
@@ -97,6 +98,7 @@ When the user returns after setup:
 - Dashboard starter: `starters/signals-dashboard/`
 - Schema files: `starters/signals-dashboard/schema/`
 - Pipeline scripts: `starters/signals-dashboard/pipeline/`
+- Video starter: `starters/video-studio/` (scenes in `scenes/`, config in `brand.config.json`)
 
 ## Rules
 

@@ -136,3 +136,80 @@ Pacing lives in `voice.lengthScale`, `gap`, `leadIn` and `tail`.
 
 Scenes with no `narration` stay silent and keep their configured duration —
 useful for a logo sting or an end card.
+
+---
+
+## This configuration: HotelBell
+
+`brand.config.json` is set up with the HotelBell brand and four videos, one
+per solution:
+
+| `--video`     | Solution     | The moment it opens on                         |
+|---------------|--------------|------------------------------------------------|
+| `reservation` | Reservation  | 11:47 PM, third ring, nobody at the desk       |
+| `follow-up`   | Follow-up    | The quote you sent Tuesday, still unanswered   |
+| `rfp`         | RFP Response | A 60-room RFP answered on Friday, booked Tuesday |
+| `review`      | Review       | A quiet checkout that becomes a one-star       |
+
+Each runs the same seven beats, roughly 60 seconds:
+
+1. **Cold open** — one concrete moment, not a feature. The hook is a person
+   the owner recognises, not a statistic.
+2. **The cost** — what that moment is worth over a year, counted up on screen.
+3. **The solution** — the bell, the name, the one-line promise.
+4. **How it works** — three steps, in the operator's language.
+5. **The maths** — the ROI laid out on cream, so the turn from pain to
+   payoff is visible before a word is spoken.
+6. **Also included** — call transfer, mobile app, recording, transcription,
+   PMS integration.
+7. **The close** — lockup, tagline, "Book a demo", the two trust lines.
+
+### The ROI numbers are a model, not a measurement
+
+The site publishes no performance statistics, so nothing here is presented
+as a HotelBell result. Every figure is an arithmetic model for one 120-room
+extended-stay property, shown on screen with its inputs and labelled
+*"Illustrative model — replace with your own numbers"*.
+
+Change them in one place — the `s5-roi.html` scene's `data` block for each
+video, and the matching `s2-cost.html` counter:
+
+```json
+"rows": [
+  { "label": "Calls missed or abandoned each week", "value": "12" },
+  { "label": "That would have booked", "value": "35%" },
+  { "label": "Average extended-stay value", "value": "$476" }
+],
+"result": { "label": "Recovered every year", "countTo": 103900, "prefix": "$" }
+```
+
+If you have real customer numbers, swap them in and drop the footnote — a
+figure you can stand behind converts better than a model, and the narration
+line in the same scene is right above it in the config.
+
+### Voice
+
+`en-us-libritts-high`, speaker 76 — chosen by synthesizing candidates and
+measuring median pitch, since the two obvious female voices in the Piper
+catalogue are low-quality 16 kHz models. To audition others:
+
+```bash
+node setup-voice.js --list
+```
+
+Then set `voice.model` (and `voice.speaker` for multi-speaker models like
+LibriTTS) and re-run `node voice.js`.
+
+### Rendering them
+
+```bash
+node voice.js                              # all four, ~3 min
+node record.js --fps 30                    # all four at 1080p
+node build.js
+
+node record.js --video rfp --format vertical   # one video, for Reels
+node record.js --video review --scale .4 --fps 12   # quick draft while editing
+```
+
+Changing narration changes scene lengths, so re-run `voice.js` before
+`record.js` — otherwise the picture is cut to the old timing.
