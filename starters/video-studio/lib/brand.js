@@ -60,6 +60,18 @@ window.__brandReady = (async () => {
     window.__video = { id: video?.id, title: video?.title };
     window.__scene = scene?.data ?? {};
     window.__narration = window.__narration ?? [];
+
+    // Pick up the real voice timings too, so captions, cuts and cues preview
+    // exactly where the recorder will put them.
+    const voiced = await fetch("../out/voice/manifest.json", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+    const name = scene?.file?.replace(/\.html$/, "");
+    const spoken = voiced?.videos?.[video?.id]?.scenes?.find((x) => x.name === name);
+    if (spoken) {
+      window.__narration = spoken.lines;
+      window.__sceneDuration = Math.max(spoken.duration, scene.minDuration ?? 0);
+    }
   }
 
   return cfg;

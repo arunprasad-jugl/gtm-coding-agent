@@ -66,7 +66,7 @@ for (const v of videos) {
     items.push({
       label: `${v.title || v.id} — ${name}`,
       url: `scenes/${sc.file}?video=${encodeURIComponent(v.id)}&scene=${i}`,
-      duration: spoken?.duration ?? sc.duration,
+      duration: Math.max(spoken?.duration ?? sc.duration, sc.minDuration ?? 0),
     });
   });
 }

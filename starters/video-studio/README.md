@@ -51,7 +51,9 @@ Useful flags:
 ```bash
 node record.js --scale .4 --fps 12     # quick draft, seconds not minutes
 node record.js --format all            # 16:9, 9:16 and 1:1
-node record.js --video front-desk      # one video from a multi-video config
+node record.js --video maya            # one video from a multi-video config
+node record.js --jobs 3                # parallel workers (default: cores - 1, max 3)
+node record.js --png                   # lossless frames instead of JPEG (slower)
 node build.js --no-transition          # hard cuts instead of crossfades
 node build.js --gif                    # also write a gif
 node build.js --web                    # also write a <30 MiB upload copy
@@ -59,8 +61,22 @@ node build.js --web 12                 # ...to a different budget, in MiB
 ```
 
 `--web` only kicks in when the master is over budget. Grain-heavy footage is
-the usual reason: the film in this repo masters at ~68 MiB and needs a
-two-pass `-tune grain` copy to clear a 30 MiB limit.
+the usual reason — film grain is close to worst-case input for H.264 — and
+the two-pass copy uses `-tune grain` so the texture survives the squeeze.
+
+### Why rendering is fast
+
+Profiling one 1080p frame: seeking the page costs about 3 ms, the screenshot
+700–1,500 ms, and most of that is PNG compression. So frames are JPEG at
+quality 94 by default — about 3× faster, and invisible once the 4:2:0 H.264
+encode has run. `--png` is still there if you need lossless frames.
+
+The other half is parallelism. Because every frame is seeked rather than
+played, any frame can be rendered by anyone in any order, so `record.js`
+splits scenes into 240-frame chunks and hands them to a pool of browser
+instances. (Separate browsers, not tabs — same-origin tabs can share a
+renderer process and quietly serialise.) Together that took the story film
+from 28 frames a minute to 531 on a 4-core machine.
 
 ## How the capture works
 
@@ -147,6 +163,45 @@ Pacing lives in `voice.lengthScale`, `gap`, `leadIn` and `tail`.
 Scenes with no `narration` stay silent and keep their configured duration —
 useful for a logo sting or an end card.
 
+### Dialogue
+
+A line can be an object instead of a string, which is how a scene gets a
+cast rather than a narrator:
+
+```json
+{ "text": "We do. Twenty-one nights, at one nineteen. Shall I hold it?",
+  "caption": "We do — 21 nights at $119. Shall I hold it?",
+  "voice": "en-us-kathleen-low", "role": "hotel", "fx": "phone",
+  "gapBefore": 380, "lengthScale": 0.9 }
+```
+
+- `voice` — any Piper model in `voices/` (`node setup-voice.js <name>`)
+- `fx: "phone"` — band-limits to 320–3300 Hz with light compression, for a
+  voice heard through a handset
+- `at` — place the line at an exact millisecond; otherwise it follows the
+  previous line, plus `gapBefore`
+- `caption` — what's shown on screen when it differs from what's spoken
+  ("one nineteen" is said, "$119" is read)
+- `role`, `label`, `sub` — who's talking, and whether it gets a burned-in
+  subtitle (narration does by default; most feed video autoplays muted)
+
+Scenes receive all of this as `window.__narration`, with each line's real
+`start` and `duration`, so live captions and cuts can land on the words.
+
+### Sound design
+
+`node sound.js` synthesizes the cues into `sfx/` — ringback, rain, room tone,
+a notification ping, a rewind swoop, a key jingle and a few beds. Scenes
+place cues in `sfx`, and videos lay beds across the whole cut in `beds`:
+
+```json
+"sfx":  [{ "cue": "ring", "at": 10600 }, { "cue": "keys", "line": 5, "edge": "end", "offset": 700 }],
+"beds": [{ "cue": "rain", "gain": 0.42, "from": 11.3, "to": 34.8 }]
+```
+
+A cue with `line` is pinned to a spoken line rather than a clock time, so it
+stays on the beat when that line is re-voiced at a different length.
+
 ---
 
 ## This configuration: HotelBell
@@ -160,6 +215,7 @@ per solution:
 | `follow-up`   | Follow-up    | The quote you sent Tuesday, still unanswered   |
 | `rfp`         | RFP Response | A 60-room RFP answered on Friday, booked Tuesday |
 | `review`      | Review       | A quiet checkout that becomes a one-star       |
+| `maya`        | Reservation, as a story (~92s) | Maya, a travel nurse, calling at 11:46 PM |
 
 Each runs the same seven beats, roughly 60 seconds:
 
@@ -173,6 +229,29 @@ Each runs the same seven beats, roughly 60 seconds:
 6. **Also included** — call transfer, mobile app, recording, transcription,
    PMS integration.
 7. **The close** — lockup, tagline, "Book a demo", the two trust lines.
+
+### The story film: "Maya's Call"
+
+`maya` tells the Reservation case as a short film with a character rather
+than as an explainer. Maya is a travel nurse — one of the largest
+extended-stay segments, so an owner recognises her immediately — whose
+contract starts Monday. At 11:46 PM she calls for three weeks of housing.
+
+It cuts between her phone (`lib/phone.js`: the staffing text, the map
+search, the call) and the hotel's front desk (`lib/lobby.js`: a full key
+rack, a back-office door left ajar, *Please ring for service*), on the beat
+of the ringback. Nobody answers; the Riverside Inn does. Monday morning the
+owner finds the 11:47 missed call — $2,499, 21 nights at $119. Then the same
+night rewinds with HotelBell on the line, the conversation is voiced, room
+412's key comes off its hook, and on Monday Maya texts to say thanks.
+
+The lobby is one set laid out across the whole stage. `cinema.shots()`
+frames regions of it — wide, desk, clock, key rack — by centre point, which
+is how a single build gives a full shot list, and how both halves of the
+film cut to the identical frame.
+
+It closes on a question — *How many rang out at your hotel last night?* —
+rather than an annual figure, so the owner supplies their own number.
 
 ### The ROI numbers are a model, not a measurement
 
@@ -199,23 +278,28 @@ line in the same scene is right above it in the config.
 
 ### Voice
 
-`en-us-libritts-high`, speaker 76 — chosen by synthesizing candidates and
-measuring median pitch, since the two obvious female voices in the Piper
-catalogue are low-quality 16 kHz models. To audition others:
+The narrator is `en-us-lessac-medium`, a professionally recorded American
+voice. An earlier pass used a LibriTTS speaker picked by pitch; LibriTTS is
+built from LibriVox volunteer recordings, so its speakers are frequently not
+native American English — and pitch says nothing about accent.
+
+The story film adds a cast: Maya is `en-us-amy-low`, the HotelBell agent is
+`en-us-kathleen-low` through the phone filter, and the clerk across the road
+is `en-us-danny-low`. All four are 16 kHz — the only American voices on the
+release this environment can reach. With Hugging Face reachable, the newer
+22 kHz American voices would be a straight swap. To audition others:
 
 ```bash
 node setup-voice.js --list
+node setup-voice.js en-us-amy-low
 ```
-
-Then set `voice.model` (and `voice.speaker` for multi-speaker models like
-LibriTTS) and re-run `node voice.js`.
 
 ### Rendering them
 
 ```bash
-node voice.js                              # all four, ~3 min
-node record.js --fps 30                    # all four at 1080p
-node build.js
+node voice.js                              # every video
+node record.js --fps 30                    # every video at 1080p
+node build.js --web
 
 node record.js --video rfp --format vertical   # one video, for Reels
 node record.js --video review --scale .4 --fps 12   # quick draft while editing

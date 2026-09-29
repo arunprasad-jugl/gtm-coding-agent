@@ -64,7 +64,7 @@ for (const videoId of videoIds) {
     // --- 1. each scene's frames -> its own clip ---------------------------
     const clips = [];
     for (const scene of entry.scenes) {
-      const frames = path.join(ROOT, "out", "frames", videoId, format, scene.name, "%05d.png");
+      const frames = path.join(ROOT, "out", "frames", videoId, format, scene.name, `%05d.${scene.ext ?? "png"}`);
       const clip = path.join(sceneDir, `${scene.name}.mp4`);
       await ffmpeg([
         "-y", "-framerate", String(fps), "-i", frames,
