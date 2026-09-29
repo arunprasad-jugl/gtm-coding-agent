@@ -205,7 +205,18 @@ async function buildAudio(videoId, videoCfg, clips, totalSecs) {
 
     for (const cue of sceneCfg?.sfx ?? []) {
       const file = cueFile(cue.cue);
-      const at = Math.round((offset + (cue.at ?? 0) / 1000) * 1000);
+      // A cue can be pinned to a spoken line rather than a clock time, so it
+      // stays on the beat when the dialogue is re-voiced at a different length.
+      let local = cue.at ?? 0;
+      if (cue.line != null) {
+        const l = spoken?.lines?.[cue.line];
+        if (!l) {
+          console.error(`error: ${clip.name} sfx refers to line ${cue.line}, which doesn't exist.`);
+          process.exit(1);
+        }
+        local = (cue.edge === "start" ? l.start : l.start + l.duration) + (cue.offset ?? 0);
+      }
+      const at = Math.round((offset + local / 1000) * 1000);
       const trim = cue.trim ? `atrim=duration=${cue.trim},asetpts=PTS-STARTPTS,` : "";
       add(["-i", file],
           (i, out) => `[${i}:a]${trim}volume=${cue.gain ?? 1}` +

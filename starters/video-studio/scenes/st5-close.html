@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act V · How many last night?</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<link rel="stylesheet" href="../lib/cinema.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/cinema.js"></script>
+<script src="../lib/logo.js"></script>
+<style>
+  .page { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 2.2vmin; text-align: center; z-index: 5; }
+  .one { font-size: 4.6vmin; font-weight: 600; letter-spacing: -.02em; opacity: .9; }
+  .big { font-size: 15vmin; font-weight: 800; letter-spacing: -.05em; line-height: 1;
+         font-variant-numeric: tabular-nums; color: var(--brand-accent); }
+  .nights { font-size: 2.6vmin; letter-spacing: .3em; color: var(--brand-muted); font-weight: 600; }
+  .q { font-size: 5.6vmin; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin-top: 2vmin; }
+  .lockup { font-size: 8vmin; }
+  .tag { font-size: var(--t-h2); font-weight: 700; letter-spacing: -.024em; line-height: 1.16; }
+  .btn { background: linear-gradient(100deg, var(--brand-accent), var(--brand-gold-hi, #f2dda3)); color: #191510; }
+  .trust { display: flex; gap: 4vmin; flex-wrap: wrap; justify-content: center; }
+  .trust span { font-size: 2vmin; opacity: .6; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="bg-glow a-drift"></div>
+    <div class="bg-vignette"></div>
+    <div class="grain" id="grain"></div>
+
+    <div class="page" id="pageA">
+      <div class="one" id="one">One missed call.</div>
+      <div class="big" id="big">$0</div>
+      <div class="nights" id="nights">21 NIGHTS · ONE GUEST · ONE CALL</div>
+      <div class="q" id="q"></div>
+    </div>
+
+    <div class="page" id="pageB">
+      <div class="lockup" data-wordmark></div>
+      <div class="tag" id="tag"></div>
+      <div id="btnWrap"><div class="btn">Book a demo</div></div>
+      <div class="url" id="url">hotelbell.ai</div>
+      <div class="trust" id="trust"><span>Runs on your rates. Your rules.</span><span>Live in days on the PMS you already have.</span></div>
+    </div>
+
+    <div class="bars static"></div>
+  </div>
+<script>
+window.__sceneReady = (async () => {
+  await window.__logoReady;
+  const C = window.__cinema, $ = (id) => document.getElementById(id);
+  const N = window.__narration || [];
+  const q = N[0] ?? { start: 3200 }, cta = N[1] ?? { start: 6500 };
+  const flip = cta.start - 350;
+
+  C.appear($("one"), 250, { dur: 500 });
+  C.appear($("big"), 900, { dur: 500 });
+  C.appear($("nights"), 1700, { dur: 500 });
+  window.__studio.lines($("q"), ["How many rang out", "at your hotel last night?"], { delay: q.start / 1000, stagger: .16 });
+  window.__studio.onSeek((t) => {
+    const n = window.__studio.tween(t, { from: 0, to: 2499, delay: 1000, dur: 1500, ease: "outExpo" });
+    $("big").textContent = "$" + Math.round(n).toLocaleString("en-US");
+    // Page A gives way to the brand.
+    const out = window.__studio.tween(t, { from: 1, to: 0, delay: flip - 300, dur: 400, ease: "outCubic" });
+    $("pageA").style.opacity = String(out);
+    $("pageB").style.opacity = t >= flip ? "1" : "0";
+  });
+
+  C.appear(document.querySelector("[data-wordmark]"), flip, { dur: 700, y: 1.6 });
+  window.__studio.lines($("tag"), ["The front desk that never", "lets a stay walk away."], { delay: (flip + 500) / 1000, stagger: .14 });
+  C.appear($("btnWrap"), flip + 1200, { dur: 500 });
+  C.appear($("url"), flip + 1500);
+  C.appear($("trust"), flip + 1800);
+  C.grain($("grain"));
+})();
+</script>
+</body>
+</html>

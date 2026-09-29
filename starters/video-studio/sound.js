@@ -94,6 +94,48 @@ const CUES = {
            "afade=t=out:st=0.01:d=0.2,volume=0.12",
   },
 
+  // Rain against the lobby window. High hiss for the drops, low wash under.
+  rain: {
+    note: "Rain on glass, 40s bed",
+    filters: [`anoisesrc=d=40:c=white:a=0.5:r=${SR}`, `anoisesrc=d=40:c=pink:a=0.4:r=${SR}`],
+    chain: "[0]highpass=f=1800,lowpass=f=9000,volume=0.2[h];" +
+           "[1]lowpass=f=600,volume=0.32[l];" +
+           "[h][l]amix=inputs=2:normalize=0,tremolo=f=0.4:d=0.15",
+  },
+
+  // A phone notification. Two notes, deliberately generic.
+  ping: {
+    note: "Notification ping",
+    filters: [`sine=f=1318.51:d=0.5:r=${SR}`, `sine=f=1760:d=0.6:r=${SR}`],
+    chain: "[0]afade=t=out:st=0:d=0.35,volume=0.22[a];" +
+           "[1]adelay=110|110,afade=t=out:st=0.11:d=0.45,volume=0.2[b];" +
+           "[a][b]amix=inputs=2:normalize=0",
+  },
+
+  // Time running backwards to 11:46. A falling sweep over a noise swoosh.
+  rewind: {
+    note: "Rewind swoop",
+    filters: [`aevalsrc=exprs='0.35*sin(2*PI*(2200*t-700*t*t))':d=1.3:s=${SR}`,
+              `anoisesrc=d=1.3:c=white:a=0.3:r=${SR}`],
+    chain: "[0]afade=t=in:d=0.05,afade=t=out:st=0.85:d=0.45[c];" +
+           "[1]bandpass=f=2500:width_type=h:w=2200,afade=t=in:d=0.1,afade=t=out:st=0.25:d=1.05,volume=0.55[n];" +
+           "[c][n]amix=inputs=2:normalize=0,volume=0.6",
+  },
+
+  // Room 412's key coming off its hook.
+  keys: {
+    note: "Key jingle",
+    filters: [`sine=f=2637:d=0.5:r=${SR}`, `sine=f=3520:d=0.5:r=${SR}`,
+              `sine=f=4186:d=0.5:r=${SR}`, `sine=f=5274:d=0.4:r=${SR}`,
+              `anoisesrc=d=0.3:c=white:a=0.6:r=${SR}`],
+    chain: "[0]afade=t=out:st=0:d=0.3,volume=0.12[a];" +
+           "[1]adelay=45|45,afade=t=out:st=0.045:d=0.3,volume=0.1[b];" +
+           "[2]adelay=95|95,afade=t=out:st=0.095:d=0.28,volume=0.09[c];" +
+           "[3]adelay=150|150,afade=t=out:st=0.15:d=0.22,volume=0.08[d];" +
+           "[4]highpass=f=5000,afade=t=out:st=0:d=0.12,volume=0.25[e];" +
+           "[a][b][c][d][e]amix=inputs=5:normalize=0",
+  },
+
   // The cut to morning. A soft hit, not a cymbal.
   impact: {
     note: "Scene-change hit",

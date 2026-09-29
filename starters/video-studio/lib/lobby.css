@@ -1,0 +1,266 @@
+/* ---------------------------------------------------------------
+   lobby.css — the reception set, lit for 11:47 PM.
+
+   Coordinates are percentages of the stage so shots() can zoom into any
+   region. With 11% letterbox bars the visible band is 11%–89%.
+   Warm interior, cool window: the teal/amber split is what makes the
+   frame read as night-time at a glance.
+   --------------------------------------------------------------- */
+
+.lobby { position: absolute; inset: 0; overflow: hidden; background: #070504; }
+.lobby .set { position: absolute; inset: 0; transform-origin: 50% 50%; }
+
+/* --- wall: dark wood panelling ------------------------------------------ */
+.lobby .wall {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0 5.6%, rgba(0,0,0,.42) 5.6% 5.85%, rgba(255,214,160,.05) 5.85% 6.05%, transparent 6.05% 6.25%),
+    linear-gradient(180deg, #1d140b 0%, #271a0e 36%, #1a1109 64%, #0c0806 100%);
+}
+.lobby .wall-glow {
+  position: absolute; left: 14%; right: 14%; top: 8%; height: 62%;
+  background: radial-gradient(ellipse at 50% 55%, rgba(255,194,118,.24), rgba(255,180,100,.06) 45%, transparent 70%);
+}
+
+/* --- key rack: the single fastest "this is a hotel" signal -------------- */
+.lobby .rack {
+  position: absolute; left: 5%; top: 17%; width: 25%; height: 27%;
+  padding: .55%;
+  background: linear-gradient(180deg, #4a3119, #2e1e0f);
+  border-radius: .35vmin;
+  box-shadow: 0 1.4vmin 3.4vmin rgba(0,0,0,.65), inset 0 0 0 .22vmin rgba(255,206,140,.22);
+}
+.lobby .rack-grid {
+  width: 100%; height: 100%;
+  display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(3, 1fr);
+  gap: .4vmin;
+}
+.lobby .cubby {
+  position: relative; border-radius: .2vmin;
+  background: linear-gradient(180deg, #0c0805, #1c130b);
+  box-shadow: inset 0 .5vmin .9vmin rgba(0,0,0,.85);
+}
+.lobby .cubby .no {
+  position: absolute; left: 50%; top: 8%; translate: -50% 0;
+  font: 600 .92vmin/1 var(--brand-font-display); letter-spacing: .06em;
+  color: #e2c083;
+}
+.lobby .cubby .fob {
+  position: absolute; left: 50%; top: 40%; width: 26%; height: 42%; translate: -50% 0;
+  background: linear-gradient(180deg, #f0cf8c, #a67b36);
+  border-radius: .2vmin .2vmin .9vmin .9vmin;
+  box-shadow: 0 .35vmin .5vmin rgba(0,0,0,.7);
+}
+.lobby .cubby .fob::before {
+  content: ""; position: absolute; left: 50%; top: -30%; width: 58%; aspect-ratio: 1; translate: -50% 0;
+  border: .16vmin solid #d6ad62; border-radius: 50%;
+}
+
+/* --- back-office door, ajar: the one person on shift is in there -------- */
+.lobby .door {
+  position: absolute; left: 32%; top: 16%; width: 7.4%; height: 40%;
+  background: #cfe0ee;                       /* the lit room beyond the gap */
+  box-shadow: 0 0 0 .55vmin #5b3e20, 0 0 0 .8vmin #2a1b0e;   /* casing */
+}
+.lobby .door-leaf {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 88%;
+  background: linear-gradient(90deg, #3d2914, #4a321a 70%, #56391d);
+  box-shadow: .5vmin 0 1.2vmin rgba(0,0,0,.55);
+}
+.lobby .door-leaf .panel {
+  position: absolute; left: 14%; right: 14%;
+  border: .2vmin solid rgba(0,0,0,.35); box-shadow: inset 0 0 0 .12vmin rgba(255,210,150,.08);
+}
+.lobby .door-leaf .panel.a { top: 7%; height: 38%; }
+.lobby .door-leaf .panel.b { top: 52%; height: 40%; }
+.lobby .door-leaf .knob {
+  position: absolute; right: 9%; top: 50%; width: .9vmin; height: .9vmin; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f3d494, #8a6428);
+}
+.lobby .door-gap {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 12%;
+  background: linear-gradient(180deg, #e2edf5, #b7cbdb);
+  box-shadow: 0 0 1.4vmin .3vmin rgba(200,222,242,.45);
+}
+.lobby .door-plate {
+  position: absolute; left: 50%; top: 30%; translate: -50% 0; z-index: 2;
+  padding: .3vmin .5vmin; white-space: nowrap;
+  font: 700 .66vmin/1 var(--brand-font-display); letter-spacing: .14em;
+  color: #1a120a; background: #c9a462; border-radius: .15vmin;
+}
+.lobby .door-spill {
+  position: absolute; left: 39.4%; top: 16%; width: 7%; height: 40%;
+  background: linear-gradient(90deg, rgba(200,222,242,.20), transparent 80%);
+  filter: blur(1.2vmin);
+}
+
+/* --- signage ------------------------------------------------------------- */
+.lobby .sign { position: absolute; left: 41%; top: 19%; width: 18%; text-align: center; }
+.lobby .sign-name {
+  font: 600 2.3vmin/1 var(--brand-font-serif); letter-spacing: .34em;
+  color: #f0d49a; text-shadow: 0 0 1.4vmin rgba(255,200,120,.6);
+}
+.lobby .sign-sub {
+  margin-top: .9vmin;
+  font: 600 .95vmin/1 var(--brand-font-display); letter-spacing: .5em;
+  color: #c9a462; opacity: .8;
+}
+
+/* --- clock --------------------------------------------------------------- */
+.lobby .clock { position: absolute; left: 62%; top: 15%; width: 6.4%; aspect-ratio: 1; }
+.lobby .clock svg { width: 100%; height: 100%; overflow: visible; }
+.lobby .c-face { fill: #f1e6cc; }
+.lobby .c-rim  { fill: none; stroke: #b88f4a; stroke-width: 4.5; }
+.lobby .c-tick { stroke: #3a2a17; stroke-width: 2.4; stroke-linecap: round; }
+.lobby .c-hour { stroke: #1d140b; stroke-width: 5; stroke-linecap: round; }
+.lobby .c-min  { stroke: #1d140b; stroke-width: 3.2; stroke-linecap: round; }
+.lobby .c-sec  { stroke: #b3372a; stroke-width: 1.3; stroke-linecap: round; }
+.lobby .c-pin  { fill: #b3372a; }
+.lobby .clock::after {  /* glass glint */
+  content: ""; position: absolute; inset: 6%; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,.28), transparent 40%);
+}
+
+/* --- window: rain on glass, city out of focus --------------------------- */
+.lobby .window {
+  position: absolute; left: 73%; top: 13%; width: 22.5%; height: 37%;
+  overflow: hidden; border-radius: .3vmin;
+  border: .55vmin solid #2c1d10;
+  box-shadow: inset 0 0 3.5vmin rgba(0,0,0,.75), 0 0 4vmin rgba(80,130,190,.18);
+}
+.lobby .window .city {
+  position: absolute; inset: -4%;
+  filter: blur(.55vmin);
+  background:
+    radial-gradient(circle at 12% 70%, rgba(255,186,96,.85) 0 1.1%, transparent 3%),
+    radial-gradient(circle at 24% 58%, rgba(255,214,150,.7) 0 .9%, transparent 2.6%),
+    radial-gradient(circle at 36% 76%, rgba(120,176,255,.7) 0 1.2%, transparent 3.2%),
+    radial-gradient(circle at 48% 62%, rgba(255,120,90,.6) 0 .8%, transparent 2.4%),
+    radial-gradient(circle at 57% 80%, rgba(255,200,120,.8) 0 1.4%, transparent 3.4%),
+    radial-gradient(circle at 68% 54%, rgba(150,200,255,.6) 0 .9%, transparent 2.6%),
+    radial-gradient(circle at 79% 72%, rgba(255,176,90,.75) 0 1.1%, transparent 3%),
+    radial-gradient(circle at 90% 60%, rgba(255,226,170,.6) 0 .8%, transparent 2.4%),
+    radial-gradient(circle at 30% 40%, rgba(255,210,140,.35) 0 .6%, transparent 2%),
+    radial-gradient(circle at 74% 36%, rgba(140,190,255,.35) 0 .6%, transparent 2%),
+    linear-gradient(180deg, #081221 0%, #0f2036 55%, #1a2d44 100%);
+}
+.lobby .window .rain {
+  position: absolute; inset: -30% -10%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cg stroke='%23cfe0ff' stroke-linecap='round'%3E%3Cline x1='10' y1='4' x2='6' y2='26' stroke-opacity='.35'/%3E%3Cline x1='38' y1='50' x2='34' y2='70' stroke-opacity='.25'/%3E%3Cline x1='64' y1='12' x2='60' y2='36' stroke-opacity='.3'/%3E%3Cline x1='92' y1='70' x2='88' y2='92' stroke-opacity='.35'/%3E%3Cline x1='120' y1='30' x2='116' y2='52' stroke-opacity='.25'/%3E%3Cline x1='24' y1='96' x2='20' y2='118' stroke-opacity='.3'/%3E%3Cline x1='76' y1='104' x2='72' y2='128' stroke-opacity='.28'/%3E%3Cline x1='130' y1='100' x2='126' y2='122' stroke-opacity='.32'/%3E%3Cline x1='52' y1='128' x2='49' y2='140' stroke-opacity='.22'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 7vmin 7vmin;
+  animation: rain .55s linear infinite;
+}
+@keyframes rain { from { background-position: 0 0; } to { background-position: -1.3vmin 7vmin; } }
+.lobby .window .mullion { position: absolute; background: #2c1d10; }
+.lobby .window .mullion.v { left: 50%; top: 0; bottom: 0; width: .5vmin; translate: -50% 0; }
+.lobby .window .mullion.h { top: 46%; left: 0; right: 0; height: .5vmin; }
+
+/* --- pendant lamp over the desk ----------------------------------------- */
+.lobby .pendant { position: absolute; left: 50%; top: 0; width: 10%; height: 60%; translate: -50% 0; }
+.lobby .pendant .cord { position: absolute; left: 50%; top: 0; width: .18vmin; height: 17%; background: #2a1d10; }
+.lobby .pendant .shade {
+  position: absolute; left: 22%; right: 22%; top: 16.5%; height: 5.5%;
+  background: linear-gradient(180deg, #4b3419, #1f150b);
+  border-radius: 50% 50% 10% 10% / 100% 100% 14% 14%;
+  box-shadow: 0 .8vmin 2.4vmin rgba(255,196,120,.5);
+}
+/* Clip on the inner layer, blur on the outer: a filter runs before
+   clip-path on the same element, so doing both in one place leaves the
+   cone with knife-sharp edges. */
+.lobby .pendant .beam {
+  position: absolute; left: -110%; right: -110%; top: 21%; height: 38%;
+  filter: blur(2.6vmin);
+}
+.lobby .pendant .beam::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,210,140,.26), rgba(255,210,140,.04));
+  clip-path: polygon(44% 0, 56% 0, 96% 100%, 4% 100%);
+}
+
+/* --- desk --------------------------------------------------------------- */
+.lobby .counter-face {
+  position: absolute; left: 12%; right: 12%; top: 59%; height: 32%;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0 7.6%, rgba(0,0,0,.45) 7.6% 7.85%, rgba(255,214,160,.06) 7.85% 8.1%, transparent 8.1% 8.33%),
+    linear-gradient(180deg, #33220f 0%, #1f1509 55%, #120c07 100%);
+  box-shadow: inset 0 .55vmin 0 rgba(255,210,145,.22);
+}
+.lobby .counter-face::after {  /* brass kick strip */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 16%; height: .5vmin;
+  background: linear-gradient(90deg, #6e4f22, #d9b46e, #6e4f22);
+  opacity: .6;
+}
+.lobby .counter {
+  position: absolute; left: 10.5%; right: 10.5%; top: 55%; height: 4.6%;
+  background: linear-gradient(180deg, #7a5530 0%, #5a3b1d 38%, #34220f 100%);
+  border-radius: .45vmin;
+  box-shadow: inset 0 .35vmin 0 rgba(255,222,170,.55), 0 1vmin 2vmin rgba(0,0,0,.6);
+}
+.lobby .pool {
+  position: absolute; left: 27%; top: 42%; width: 46%; height: 24%;
+  background: radial-gradient(ellipse at center,
+    rgba(255,214,150,.42) 0%, rgba(255,196,118,.16) 40%, transparent 72%);
+  filter: blur(1.2vmin);
+  pointer-events: none;
+}
+
+.lobby .bell-prop {
+  position: absolute; left: 37%; top: 48.3%; width: 6%; aspect-ratio: 1.2;
+  filter: drop-shadow(0 .6vmin .8vmin rgba(0,0,0,.6));
+}
+.lobby .bell-prop svg { width: 100%; height: 100%; display: block; }
+/* The service bell is the HotelBell mark made physical — when the call is
+   answered in the replay, this is what lights up. */
+.lobby .bell-prop.glow { filter: drop-shadow(0 0 2.4vmin rgba(255,208,130,.95)) drop-shadow(0 0 5vmin rgba(255,190,100,.6)); }
+
+.lobby .phone { position: absolute; left: 48.5%; top: 49.4%; width: 9%; aspect-ratio: 120 / 70;
+  filter: drop-shadow(0 .8vmin 1vmin rgba(0,0,0,.65)); }
+.lobby .phone svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.lobby .p-base    { fill: #2a1f16; stroke: #463322; stroke-width: 1; }
+.lobby .p-handset { fill: #33271c; stroke: #54402b; stroke-width: 1; }
+.lobby .p-cord    { fill: none; stroke: #241a12; stroke-width: 2.4; stroke-linecap: round; }
+.lobby .p-key     { fill: #45352a; }
+.lobby .p-screen  { fill: #0f0c08; }
+.lobby .p-text    { font: 700 7px/1 var(--brand-font-display); fill: transparent; letter-spacing: .5px; }
+.lobby .p-led     { fill: #3a1d14; }
+/* Ringing: backlit screen, flashing LED. */
+.lobby .phone.lit .p-screen { fill: #ffd184; filter: drop-shadow(0 0 3px #ffc46a); }
+.lobby .phone.lit .p-text   { fill: #3a2610; }
+.lobby .phone.lit .p-led    { fill: #ff5a3c; filter: drop-shadow(0 0 3px #ff5a3c); }
+
+.lobby .ledger { position: absolute; left: 61%; top: 53.6%; width: 8%; height: 2.3%; transform: skewX(-22deg); }
+.lobby .ledger .pages {
+  position: absolute; inset: 0; border-radius: .2vmin;
+  background: linear-gradient(90deg, #efe4c8, #d6c6a0 47%, #a68f63 50%, #d6c6a0 53%, #efe4c8);
+  box-shadow: 0 .3vmin .6vmin rgba(0,0,0,.5);
+}
+
+/* --- foreground ----------------------------------------------------------- */
+.lobby .trolley { position: absolute; left: 87.5%; top: 55%; width: 10.5%; aspect-ratio: 100 / 170;
+  filter: drop-shadow(0 1vmin 1.4vmin rgba(0,0,0,.7)); }
+.lobby .trolley svg { width: 100%; height: 100%; display: block; }
+
+.lobby .palm { position: absolute; left: -2.5%; top: 49%; width: 14%; aspect-ratio: 100 / 150; }
+.lobby .palm svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.lobby .palm .fronds path { fill: #16230f; stroke: #2f4a1d; stroke-width: .6; }
+.lobby .palm .trunk { fill: #2a1d10; }
+.lobby .palm .pot { fill: #3a2715; }
+
+/* Ironic, and every owner has one: nobody is there to hear it. */
+.lobby .tent {
+  position: absolute; left: 31.6%; top: 50.6%; width: 4.6%; height: 4.3%;
+  display: grid; place-items: center; text-align: center;
+  background: linear-gradient(180deg, #f3e9d2, #d9cba8);
+  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+  box-shadow: 0 .4vmin .6vmin rgba(0,0,0,.5);
+}
+.lobby .tent span {
+  font: 700 .62vmin/1.25 var(--brand-font-display); letter-spacing: .1em; color: #3a2a17;
+}
+
+/* Answered: the screen stays lit, the LED goes green. */
+.lobby .phone.answered .p-screen { fill: #ffd184; filter: drop-shadow(0 0 3px #ffc46a); }
+.lobby .phone.answered .p-text   { fill: #3a2610; }
+.lobby .phone.answered .p-led    { fill: #34c759; filter: drop-shadow(0 0 3px #34c759); }

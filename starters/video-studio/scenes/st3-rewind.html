@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act III · The same night, answered</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<link rel="stylesheet" href="../lib/cinema.css">
+<link rel="stylesheet" href="../lib/lobby.css">
+<link rel="stylesheet" href="../lib/phone.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/cinema.js"></script>
+<script src="../lib/lobby.js"></script>
+<script src="../lib/phone.js"></script>
+<script src="../lib/logo.js"></script>
+<script src="../lib/story.js"></script>
+<style>
+  .stage { padding: 0; }
+  .rw { background: #050505; display: grid; place-items: center; overflow: hidden; }
+  .rw-box { position: relative; z-index: 2; text-align: center; font-family: var(--brand-font-mono); color: #ece4d4; }
+  .rw-ic { font-size: 3.6vmin; color: var(--brand-accent); margin-bottom: 1.6vmin; letter-spacing: -.3vmin; }
+  .rw-stamp { font-size: 7.4vmin; font-weight: 500; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .rw-lines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 2px, transparent 2px 4px); }
+  .rw-band { position: absolute; left: 0; right: 0; height: 7%; background: rgba(255,255,255,.08); filter: blur(.4vmin); }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="view rw" id="vRew">
+      <div class="rw-lines"></div><div class="rw-band" id="band"></div>
+      <div class="rw-box"><div class="rw-ic">◀◀ REWIND</div><div class="rw-stamp" id="stamp"></div></div>
+    </div>
+    <div class="view" id="vLobby"><div id="env"></div></div>
+    <div class="view" id="vPhone">
+      <div class="phone-stage"><div class="bokeh" id="bokeh"></div><div class="pcam" id="pcam"><div id="device"></div></div></div>
+    </div>
+
+    <div class="grain" id="grain"></div>
+    <div class="l3" id="l3"><div class="l3-a">SAME NIGHT · 11:47 PM</div><div class="l3-b">WITH HOTELBELL ON THE LINE</div></div>
+    <div class="subs" id="subs"></div>
+    <div class="bars static"></div>
+  </div>
+
+<script>
+const RING = [2200, 3600];      // one ring, then it's answered
+const ANSWER = 3600;
+
+window.__sceneReady = (async () => {
+  await window.__logoReady;
+  const C = window.__cinema, S = window.__story, $ = (id) => document.getElementById(id);
+  const N = window.__narration || [];
+  const dialogue = N.filter((l) => l.role === "maya" || l.role === "hotel");
+  const [m1, h1] = dialogue;
+  const last = dialogue[dialogue.length - 1];
+  const E = last ? last.start + last.duration : 24000;     // "…room 412 is yours, Maya."
+  const IC = [h1 ? h1.start + 1800 : 15000, h1 ? h1.start + 3900 : 17000];  // lobby intercut
+
+  // --- rewind: Monday 7:02 back to Friday 11:46 ----------------------------
+  const STAMPS = ["MON  7:02 AM", "MON  3:40 AM", "SUN  9:15 PM", "SUN 11:02 AM", "SAT  6:48 PM", "SAT  2:21 AM", "FRI  11:46 PM"];
+  window.__studio.onSeek((t) => {
+    const i = Math.min(STAMPS.length - 1, Math.floor(t / 165));
+    $("stamp").textContent = STAMPS[i];
+    const f = Math.floor(t / 40);
+    $("band").style.top = `${(Math.sin(f * 12.99) * 43758.5 % 1 + 1) % 1 * 90}%`;
+  });
+
+  // --- the lobby, identical to act one -----------------------------------
+  window.__lobby($("env"));
+  const set = document.querySelector(".lobby .set");
+  const desk = document.querySelector(".lobby .phone");
+  const bell = document.querySelector(".lobby .bell-prop");
+  const text = desk.querySelector(".p-text");
+  const clockEl = document.querySelector(".lobby .clock");
+  const fob = document.querySelector('.lobby .cubby[data-room="412"] .fob');
+  const WORLD = 23 * 3600 + 46 * 60 + 58;
+  const ringing = (t) => t >= RING[0] && t < RING[1];
+
+  window.__studio.onSeek((t) => {
+    window.__lobbyClock(clockEl, WORLD + t / 1000);
+    desk.classList.toggle("lit", ringing(t));
+    desk.classList.toggle("answered", t >= ANSWER);
+    text.textContent = t >= ANSWER ? "HOTELBELL" : "LINE 1";
+    // The service bell — the brand, as the object it is — is what answers.
+    bell.classList.toggle("glow", t >= ANSWER);
+    // Room 412's key comes off its hook: the room has sold.
+    const p = window.__studio.tween(t, { from: 0, to: 1, delay: E + 650, dur: 750, ease: "inOut" });
+    fob.style.transform = `translateY(${(-p * 150).toFixed(1)}%)`;
+    fob.style.opacity = String(1 - p);
+  });
+  C.jitter(desk, ringing, 0.1);
+
+  // --- Maya's phone: live captions --------------------------------------
+  S.bokeh($("bokeh"), "night");
+  const P = window.__phone.device($("device"));
+  P.clock.textContent = "11:47";
+  const LV = window.__phone.live(P.view("live"), { name: "Maple Suites", initials: "MS" });
+  P.views.live.style.opacity = "1";
+  for (const l of dialogue) {
+    const row = LV.line(l.role === "hotel" ? "hotel" : "me", l.role === "hotel" ? "Maple Suites" : "You");
+    // Live captions arrive as the words are spoken, not all at once.
+    S.typeInto(row.text, l.caption, l.start, Math.max(400, l.duration - 150));
+    C.appear(row.row, l.start - 120, { dur: 220, y: .5 });
+    // Unspoken lines must take no space, or the bottom-anchored column
+    // leaves a gap where the future conversation will go.
+    window.__studio.onSeek((t) => { row.row.style.display = t >= l.start - 120 ? "block" : "none"; });
+  }
+  window.__studio.onSeek((t) => {
+    const s = Math.max(0, Math.floor((t - ANSWER) / 1000));
+    LV.timer.textContent = `00:${String(s).padStart(2, "0")}`;
+  });
+  const banner = window.__phone.notif(P.banners, {
+    app: "Maple Suites", appIcon: "bed", appColor: "#b8914c",
+    title: "You're confirmed — Room 412", body: "21 nights · Mar 2 – 23 · $119/night · King studio",
+  });
+  C.appear(banner, E + 2300, { y: -3 });
+
+  // --- the edit --------------------------------------------------------------
+  C.shots(
+    { rewind: { el: $("vRew") }, lobby: { el: $("vLobby"), cam: set }, phone: { el: $("vPhone"), cam: $("pcam") } },
+    [
+      { at: 0,                       view: "rewind" },
+      { at: 1400,                    view: "lobby", center: [50, 50], zoom: [1.0, 1.04] },     // same frame as act one
+      { at: 3800,                    view: "lobby", center: [46.5, 52], zoom: [2.5, 2.62] },   // the bell answers
+      { at: (m1?.start ?? 6800) - 200, view: "phone", center: [50, 46], zoom: [1.4, 1.46] },
+      { at: IC[0],                   view: "lobby", center: [44, 51], zoom: [2.9, 3.0] },
+      { at: IC[1],                   view: "phone", center: [50, 50], zoom: [1.55, 1.6] },
+      { at: E + 300,                 view: "lobby", center: [27.4, 30.5], zoom: [3.5, 3.62] }, // 412
+      { at: E + 1900,                view: "phone", center: [50, 34], zoom: [1.55, 1.6] },     // confirmed
+    ]
+  );
+
+  // Subtitles: narration always; dialogue only while we're away from her
+  // screen, since her captions already carry it there.
+  const subs = $("subs");
+  window.__studio.onSeek((t) => {
+    const hit = (l) => t >= l.start - 80 && t < l.start + l.duration + 250;
+    const narr = N.find((l) => l.role === "narrator" && hit(l));
+    const dia = t >= IC[0] && t < IC[1] ? dialogue.find(hit) : null;
+    const line = narr || dia;
+    subs.textContent = line ? (dia ? (dia.role === "hotel" ? "MAPLE SUITES —  " : "MAYA —  ") : "") + line.caption : "";
+    subs.style.opacity = line ? "1" : "0";
+    subs.style.visibility = line ? "visible" : "hidden";
+  });
+
+  C.grain($("grain"));
+  C.appear($("l3"), 1600, { until: 3700 });
+})();
+</script>
+</body>
+</html>

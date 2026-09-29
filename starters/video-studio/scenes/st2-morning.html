@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act II · Monday, 7:02 AM</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<link rel="stylesheet" href="../lib/cinema.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/cinema.js"></script>
+<style>
+  .stage { padding: 0; }
+  .day-bg { position: absolute; inset: 0;
+    background:
+      radial-gradient(70% 60% at 78% 20%, rgba(255,236,196,.9), transparent 60%),
+      linear-gradient(180deg, #efe6d4, #d9ccb2); }
+  .dcam { position: absolute; inset: 0; }
+
+  .app {
+    position: absolute; left: 13%; top: 17%; width: 60%; height: 64%;
+    border-radius: 1.4vmin; overflow: hidden;
+    background: #fbf8f2;
+    box-shadow: 0 3vmin 7vmin -2vmin rgba(60,40,10,.45), 0 0 0 1px rgba(0,0,0,.06);
+    font-family: var(--brand-font-ui); color: #1c1812;
+  }
+  .app-bar { height: 4.2vmin; display: flex; align-items: center; gap: .8vmin; padding: 0 1.6vmin;
+    background: #efe9dd; border-bottom: 1px solid rgba(0,0,0,.07); font-size: 1.45vmin; font-weight: 600; color: #6b614f; }
+  .app-bar i { width: 1.2vmin; height: 1.2vmin; border-radius: 50%; background: #d8cfbd; }
+  .app-bar span { margin-left: 1.2vmin; }
+  .app-body { padding: 2.6vmin 3vmin; }
+  .app-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.4vmin; }
+  .hello { font-size: 3.2vmin; font-weight: 700; letter-spacing: -.02em; }
+  .when { font-size: 1.6vmin; color: #7c7260; margin-top: .4vmin; }
+  .vacant { font-size: 1.7vmin; color: #7c7260; }
+  .vacant b { font-size: 3vmin; color: #1c1812; margin-right: .5vmin; }
+
+  .panel { border: 1px solid rgba(0,0,0,.08); border-radius: 1.2vmin; overflow: hidden; background: #fff; }
+  .panel-h { display: flex; align-items: center; gap: 1vmin; padding: 1.4vmin 2vmin;
+    font-size: 1.7vmin; font-weight: 700; border-bottom: 1px solid rgba(0,0,0,.07); }
+  .count { font-size: 1.3vmin; padding: .2vmin .8vmin; border-radius: 1vmin; background: #fde2de; color: #c0392b; }
+  .row { position: relative; display: grid; grid-template-columns: 9vmin 1fr 7vmin 14vmin; align-items: center;
+    padding: 1.15vmin 2vmin; font-size: 1.65vmin; border-bottom: 1px solid rgba(0,0,0,.05);
+    font-variant-numeric: tabular-nums; }
+  .row .tm { font-weight: 700; }
+  .row .num { color: #5f5646; }
+  .row .dur { color: #8a806e; }
+  .row .vm { color: #b0a690; font-size: 1.4vmin; text-align: right; }
+  .row .hl { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(212,175,106,.32), rgba(212,175,106,.1));
+    box-shadow: inset .5vmin 0 0 #c9a04e; opacity: 0; }
+  .row > span { position: relative; }
+
+  .reveal {
+    position: absolute; left: 66%; top: 35%; width: 27%;
+    padding: 2.6vmin 2.8vmin; border-radius: 1.6vmin;
+    background: #16120c; color: #f5efe4;
+    box-shadow: 0 3vmin 6vmin -1.5vmin rgba(0,0,0,.55);
+    font-family: var(--brand-font-ui);
+    opacity: 0;
+  }
+  .rv-k { font-size: 1.25vmin; letter-spacing: .22em; color: var(--brand-accent); font-weight: 700; margin-bottom: 1.2vmin; }
+  .rv-who { font-size: 2.3vmin; font-weight: 700; margin-bottom: 1.8vmin; }
+  .rv-row { display: flex; justify-content: space-between; gap: 2vmin; padding: .9vmin 0;
+    border-top: 1px solid rgba(255,255,255,.08); font-size: 1.6vmin; }
+  .rv-row span { opacity: .6; }
+  .rv-row .gold { color: var(--brand-accent); font-size: 2.6vmin; }
+  .rv-lost { margin-top: 1.4vmin; display: inline-block; padding: .4vmin 1vmin; border-radius: .6vmin;
+    background: #3a1814; color: #ff8a78; font-size: 1.25vmin; font-weight: 700; letter-spacing: .16em; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="view" id="vDay">
+      <div class="day-bg"></div>
+      <div class="dcam" id="dcam">
+        <div class="app">
+          <div class="app-bar"><i></i><i></i><i></i><span>Front Desk — Maple Suites</span></div>
+          <div class="app-body">
+            <div class="app-head">
+              <div><div class="hello">Good morning</div><div class="when">Monday, March 2 · 7:02 AM</div></div>
+              <div class="vacant"><b>34</b>rooms vacant tonight</div>
+            </div>
+            <div class="panel">
+              <div class="panel-h">Missed calls overnight <span class="count">6</span></div>
+              <div id="rows"></div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal" id="reveal">
+          <div class="rv-k">WHAT YOU DIDN'T SEE</div>
+          <div class="rv-who">Maya, travel nurse</div>
+          <div class="rv-row"><span>Stay</span><b>21 nights · King studio</b></div>
+          <div class="rv-row"><span>Value</span><b class="gold">$2,499</b></div>
+          <div class="rv-row"><span>Booked at</span><b>Riverside Inn</b></div>
+          <div class="rv-lost">LOST · ACROSS THE ROAD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grain" id="grain" style="--grain:.07"></div>
+    <div class="l3" id="l3"><div class="l3-a">MONDAY · 7:02 AM</div><div class="l3-b">THE MORNING AFTER</div></div>
+    <div class="subs" id="subs"></div>
+    <div class="bars static"></div>
+  </div>
+
+<script>
+const CALLS = [
+  ["10:10 PM", "(512) ··· 4418", "0:22"],
+  ["10:48 PM", "(480) ··· 9037", "0:14"],
+  ["11:11 PM", "(214) ··· 7752", "0:31"],
+  ["11:47 PM", "(602) ··· 1180", "0:13"],   // Maya
+  ["12:26 AM", "(915) ··· 6604", "0:09"],
+  ["1:32 AM",  "(806) ··· 2237", "0:25"],
+];
+
+window.__sceneReady = (async () => {
+  await window.__brandReady;
+  const C = window.__cinema, $ = (id) => document.getElementById(id);
+
+  const host = $("rows");
+  let mayaRow;
+  CALLS.forEach(([tm, num, dur], i) => {
+    const r = document.createElement("div");
+    r.className = "row";
+    r.innerHTML = `<div class="hl"></div><span class="tm"></span><span class="num"></span><span class="dur"></span><span class="vm">No voicemail</span>`;
+    r.querySelector(".tm").textContent = tm;
+    r.querySelector(".num").textContent = num;
+    r.querySelector(".dur").textContent = dur;
+    host.appendChild(r);
+    C.appear(r, 300 + i * 120, { dur: 300, y: .6 });
+    if (i === 3) mayaRow = r;
+  });
+
+  const hl = mayaRow.querySelector(".hl");
+  window.__studio.onSeek((t) => {
+    // The 11:47 row lights up, and keeps pulsing slightly while we look at it.
+    const on = window.__studio.tween(t, { from: 0, to: 1, delay: 2300, dur: 500, ease: "outCubic" });
+    hl.style.opacity = String(on * (0.85 + 0.15 * Math.sin(t / 260)));
+  });
+
+  C.shots({ day: { el: $("vDay"), cam: $("dcam") } }, [
+    { at: 0,    view: "day", center: [44, 50], zoom: [1.14, 1.18] },
+    { at: 2300, view: "day", center: [40, 62], zoom: [1.55, 1.62] },     // the 11:47 row
+    { at: 4600, view: "day", center: [56, 50], zoom: [1.02, 1.06] },     // what you didn't see
+  ]);
+
+  C.appear($("reveal"), 4700, { dur: 600, y: 2 });
+  C.grain($("grain"));
+  C.appear($("l3"), 300, { until: 2200 });
+  C.subtitles($("subs"));
+})();
+</script>
+</body>
+</html>

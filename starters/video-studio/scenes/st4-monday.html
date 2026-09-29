@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act IV · Monday, check-in</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<link rel="stylesheet" href="../lib/cinema.css">
+<link rel="stylesheet" href="../lib/phone.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/cinema.js"></script>
+<script src="../lib/phone.js"></script>
+<script src="../lib/story.js"></script>
+<style>.stage { padding: 0; }</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="view" id="vPhone">
+      <div class="phone-stage"><div class="bokeh" id="bokeh"></div><div class="pcam" id="pcam"><div id="device"></div></div></div>
+    </div>
+    <div class="grain" id="grain" style="--grain:.08"></div>
+    <div class="l3" id="l3"><div class="l3-a">MONDAY · 3:12 PM</div><div class="l3-b">CHECK-IN DAY</div></div>
+    <div class="subs" id="subs"></div>
+    <div class="bars static"></div>
+  </div>
+<script>
+window.__sceneReady = (async () => {
+  await window.__brandReady;
+  const C = window.__cinema, S = window.__story, $ = (id) => document.getElementById(id);
+
+  S.bokeh($("bokeh"), "day");
+  const P = window.__phone.device($("device"));
+  P.clock.textContent = "3:12";
+  const T = window.__phone.thread(P.view("thread2"), {
+    name: "Maple Suites", initials: "MS", color: "#b8914c", sub: "Front desk · Text message",
+  });
+  P.views.thread2.style.opacity = "1";
+  const a = T.say("them", "Welcome, Maya! Your key to room 412 is ready at the front desk 🔑");
+  const ty = T.typing("me");
+  const b = T.say("me", "You picked up at midnight. Honestly — thank you 🙏");
+
+  C.appear(a, 600);
+  C.appear(ty, 2400, { until: 4200, outDur: 1 });
+  C.appear(b, 4300);
+
+  C.shots({ phone: { el: $("vPhone"), cam: $("pcam") } }, [
+    { at: 0,    view: "phone", center: [50, 36], zoom: [1.62, 1.68] },
+    { at: 4200, view: "phone", center: [50, 40], zoom: [1.8, 1.86] },
+  ]);
+  C.grain($("grain"));
+  C.appear($("l3"), 300, { until: 2600 });
+  C.subtitles($("subs"));
+})();
+</script>
+</body>
+</html>

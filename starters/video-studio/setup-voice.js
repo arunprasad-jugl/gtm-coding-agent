@@ -20,10 +20,11 @@ const BASE = "https://github.com/rhasspy/piper/releases/download/v0.0.2";
 const VOICES = {
   "en-us-ryan-high":     "Male, warm and measured. Good for founder/brand narration.",
   "en-us-ryan-medium":   "Male, same voice, smaller and faster to synthesize.",
-  "en-us-libritts-high": "Male, brighter and more energetic.",
-  "en-us-amy-low":       "Female, light and friendly.",
-  "en-us-kathleen-low":  "Female, calm and even.",
-  "en-us-lessac-medium": "Neutral, very clear. The safe default for dense copy.",
+  "en-us-libritts-high": "Multi-speaker (904), volunteer readers — accents vary. 22 kHz.",
+  "en-us-amy-low":       "Female, American, light and friendly. 16 kHz.",
+  "en-us-kathleen-low":  "Female, American, calm and even. 16 kHz.",
+  "en-us-lessac-medium": "Female, American, professional narrator. 16 kHz.",
+  "en-us-danny-low":     "Male, American, casual. Good for a bit part.",
 };
 
 if (process.argv.includes("--list")) {
@@ -35,7 +36,10 @@ if (process.argv.includes("--list")) {
   process.exit(0);
 }
 
-const model = cfg.voice?.model || "en-us-ryan-high";
+// A voice named on the command line, or the configured narrator. Dialogue
+// lines can name other voices; fetch those the same way.
+const named = process.argv.slice(2).find((a) => !a.startsWith("--"));
+const model = named || cfg.voice?.model || "en-us-ryan-high";
 const dir = path.join(ROOT, "voices");
 fs.mkdirSync(dir, { recursive: true });
 

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act I · Friday, 11:46 PM</title>
+<link rel="stylesheet" href="../lib/stage.css">
+<link rel="stylesheet" href="../lib/cinema.css">
+<link rel="stylesheet" href="../lib/lobby.css">
+<link rel="stylesheet" href="../lib/phone.css">
+<script src="../lib/brand.js"></script>
+<script src="../lib/studio.js"></script>
+<script src="../lib/cinema.js"></script>
+<script src="../lib/lobby.js"></script>
+<script src="../lib/phone.js"></script>
+<script src="../lib/logo.js"></script>
+<script src="../lib/story.js"></script>
+<style>
+  .stage { padding: 0; }
+  .card-view { background: #000; display: grid; place-items: center; }
+  .card-view .line-1 { font-size: 5.4vmin; font-weight: 600; letter-spacing: -.02em; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="view" id="vPhone">
+      <div class="phone-stage"><div class="bokeh" id="bokeh"></div><div class="pcam" id="pcam"><div id="device"></div></div></div>
+    </div>
+    <div class="view" id="vLobby"><div id="env"></div></div>
+    <div class="view card-view" id="vCard"><div class="line-1" id="cardText">She booked across the road.</div></div>
+
+    <div class="grain" id="grain"></div>
+    <div class="l3" id="l3a"><div class="l3-a">MAYA</div><div class="l3-b">TRAVEL NURSE · FRIDAY, 11:46 PM</div></div>
+    <div class="l3" id="l3b"><div class="l3-a">MAPLE SUITES</div><div class="l3-b">FRONT DESK · ONE PERSON ON SHIFT</div></div>
+    <div class="ring-log" id="rings"><div class="r">RING 1</div><div class="r">RING 2</div><div class="r">RING 3</div></div>
+    <div class="subs" id="subs"></div>
+    <div class="bars"></div>
+  </div>
+
+<script>
+// Every beat hangs off the ringback: 2s on, 4s off, starting at 10.6s. The
+// third ring is cut off after 1.2s because she gives up.
+const RINGS = [[10600, 12600], [16600, 18600], [22600, 23800]];
+const ringing = (t) => RINGS.some(([a, b]) => t >= a && t < b);
+
+window.__sceneReady = (async () => {
+  await window.__logoReady;
+  const C = window.__cinema, S = window.__story, $ = (id) => document.getElementById(id);
+
+  // --- the lobby ---------------------------------------------------------
+  window.__lobby($("env"));
+  const set = document.querySelector(".lobby .set");
+  const deskPhone = document.querySelector(".lobby .phone");
+  const clockEl = document.querySelector(".lobby .clock");
+  const WORLD = 23 * 3600 + 46 * 60 + 45;          // 11:46:45 PM at t = 0
+  window.__studio.onSeek((t) => {
+    deskPhone.classList.toggle("lit", ringing(t));
+    window.__lobbyClock(clockEl, WORLD + t / 1000);
+  });
+  C.jitter(deskPhone, ringing, 0.1);
+
+  // --- Maya's phone ------------------------------------------------------
+  S.bokeh($("bokeh"), "night");
+  const P = window.__phone.device($("device"));
+
+  const L = window.__phone.lock(P.view("lock"), { time: "11:46", date: "Friday, February 28" });
+  const n1 = window.__phone.notif(L.notifs, {
+    app: "Traveler Staffing", appColor: "#3a7bfd",
+    title: "Contract confirmed ✅", body: "St. Luke's Medical Center · Starts Monday · 3 weeks",
+  });
+
+  const T = window.__phone.thread(P.view("thread"), { name: "Traveler Staffing", initials: "TS", color: "#3a7bfd" });
+  const b1 = T.say("them", "Contract confirmed ✅ St. Luke's, starts Monday. 3 weeks.");
+  const b2 = T.say("them", "Heads up — housing is on you this time 🙏");
+  const ty = T.typing("me");
+  const b3 = T.say("me", "On it 😅");
+
+  const SR = window.__phone.search(P.view("search"), { results: [
+    { name: "Maple Suites", rating: "4.7", kind: "Extended stay", dist: "0.4 mi", note: "Front desk open 24 hours" },
+    { name: "Riverside Inn", rating: "4.1", kind: "Hotel", dist: "0.5 mi", note: "Open 24 hours" },
+  ] });
+  const CALL = window.__phone.call(P.view("call"), { name: "Maple Suites", initials: "MS" });
+  const banner = window.__phone.notif(P.banners, {
+    app: "Mail", appIcon: "bed", appColor: "#5b6270",
+    title: "Riverside Inn — Reservation confirmed", body: "21 nights · Mar 2 – 23 · $2,499.00",
+  });
+
+  S.screens(P, [[0, "lock"], [4200, "thread"], [7400, "search"], [10200, "call"], [26000, "search"], [26500, "call"]]);
+
+  C.appear(n1, 1600);
+  C.appear(b1, 4200, { dur: 1 });
+  C.appear(b2, 5000);
+  C.appear(ty, 5900, { until: 6700, outDur: 1 });
+  C.appear(b3, 6700);
+  S.typeInto(SR.query, "extended stay near St. Luke's", 7500, 1200);
+  C.appear(SR.cards[0], 8900);
+  C.appear(SR.cards[1], 9100);
+  window.__phone.tap(SR.cards[0].querySelector(".sr-call"), 9900, P.screen);
+  window.__phone.tap(SR.cards[1].querySelector(".sr-call"), 26200, P.screen);
+  C.appear(banner, 31200, { y: -3 });
+
+  const callView = P.views.call;
+  window.__studio.onSeek((t) => {
+    P.clock.textContent = t < 19000 ? "11:46" : "11:47";
+    SR.caret.style.opacity = Math.floor(t / 450) % 2 ? "0" : "1";
+    if (t < 24800) {
+      CALL.name.textContent = "Maple Suites"; CALL.av.textContent = "MS";
+      CALL.status.textContent = "calling…"; CALL.status.classList.remove("ended"); callView.classList.remove("dim");
+    } else if (t < 26500) {
+      CALL.status.textContent = "Call Ended · 00:13"; CALL.status.classList.add("ended"); callView.classList.add("dim");
+    } else {
+      CALL.name.textContent = "Riverside Inn"; CALL.av.textContent = "RI";
+      CALL.status.classList.remove("ended"); callView.classList.remove("dim");
+      CALL.status.textContent = t < 27900 ? "calling…" : "00:" + String(Math.floor((t - 27900) / 1000)).padStart(2, "0");
+    }
+  });
+
+  // --- the edit ------------------------------------------------------------
+  C.shots(
+    { phone: { el: $("vPhone"), cam: $("pcam") }, lobby: { el: $("vLobby"), cam: set }, card: { el: $("vCard") } },
+    [
+      { at: 0,     view: "phone", zoom: [1.0, 1.04] },
+      { at: 1600,  view: "phone", center: [50, 40], zoom: [1.6, 1.66] },            // the notification
+      { at: 4200,  view: "phone", center: [50, 34], zoom: [1.75, 1.82] },           // the texts
+      { at: 7400,  view: "phone", center: [50, 50], zoom: [1.3, 1.36] },            // the search
+      { at: 10200, view: "phone", center: [50, 44], zoom: [1.12, 1.16] },           // calling
+      { at: 11400, view: "lobby", center: [50, 50], zoom: [1.0, 1.04] },            // wide: nobody here
+      { at: 14200, view: "phone", center: [50, 42], zoom: [1.28, 1.34] },           // calling…
+      { at: 16200, view: "lobby", center: [46.5, 52], zoom: [2.5, 2.62] },          // bell, phone ringing
+      { at: 19000, view: "lobby", center: [65.2, 20.7], zoom: [4.3, 4.5] },         // 11:47
+      { at: 20400, view: "lobby", center: [17.5, 30.5], zoom: [2.55, 2.68] },       // every key still here
+      { at: 22400, view: "phone", center: [50, 38], zoom: [1.5, 1.56] },            // calling…
+      { at: 23400, view: "lobby", center: [53.2, 52.6], zoom: [4.2, 4.35] },        // it stops
+      { at: 24800, view: "phone", zoom: [1.12, 1.16] },                             // call ended
+      { at: 32600, view: "card" },
+    ]
+  );
+
+  C.grain($("grain"));
+  C.appear($("l3a"), 400, { until: 3600 });
+  C.appear($("l3b"), 11700, { until: 14000 });
+  C.window($("rings"), 10400, 24800);
+  C.rings($("rings"), RINGS.map(([a]) => a), { hold: 1600 });
+  C.appear($("cardText"), 32700, { dur: 700 });
+  C.subtitles($("subs"));
+})();
+</script>
+</body>
+</html>

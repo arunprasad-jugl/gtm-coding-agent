@@ -20,13 +20,14 @@
     "ink": "#14120e",
     "font-display": "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
     "font-serif": "'Playfair Display', Georgia, 'Times New Roman', serif",
-    "font-mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
+    "font-mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+    "font-ui": "'Inter', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
   },
-  "fontUrl": "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+  "fontUrl": "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap",
   "voice": {
     "model": "en-us-lessac-medium",
     "speaker": null,
-    "lengthScale": 1.03,
+    "lengthScale": 0.98,
     "sentenceSilence": 0.3,
     "gap": 0.22,
     "leadIn": 0.35,
@@ -733,144 +734,264 @@
       ]
     },
     {
-      "id": "ring-three",
-      "title": "Ring Three (film)",
-      "beds": [
-        {
-          "cue": "room",
-          "gain": 0.4,
-          "from": 0,
-          "to": 38,
-          "fadeIn": 1.5,
-          "fadeOut": 3
-        },
-        {
-          "cue": "drone",
-          "gain": 0.36,
-          "from": 2.5,
-          "to": 40,
-          "fadeIn": 3.5,
-          "fadeOut": 6
-        },
-        {
-          "cue": "room",
-          "gain": 0.52,
-          "from": 37,
-          "to": 72,
-          "fadeIn": 2,
-          "fadeOut": 5
-        },
-        {
-          "cue": "pad",
-          "gain": 0.2,
-          "from": 38.5,
-          "to": 78,
-          "fadeIn": 4,
-          "fadeOut": 6
-        }
-      ],
+      "id": "maya",
+      "title": "Maya's Call",
       "scenes": [
         {
-          "file": "f1-ring.html",
-          "minDuration": 22000,
-          "narrationStart": 16200,
+          "file": "st1-night.html",
+          "minDuration": 35000,
           "narration": [
-            "Eighteen seconds.",
-            "That is how long it takes to lose a three-week stay."
+            {
+              "text": "This is Maya. She's a travel nurse.",
+              "at": 1200
+            },
+            {
+              "text": "Her new contract starts Monday, and she still needs somewhere to stay for three weeks.",
+              "at": 3900
+            },
+            {
+              "voice": "en-us-danny-low",
+              "role": "clerk",
+              "fx": "phone",
+              "lengthScale": 0.92,
+              "text": "Riverside Inn, this is Dan. How can I help?",
+              "at": 27900,
+              "label": "RIVERSIDE INN \u2014",
+              "sub": true
+            },
+            {
+              "text": "She booked across the road.",
+              "at": 32600,
+              "sub": false
+            }
           ],
           "sfx": [
             {
-              "cue": "ring",
-              "at": 1500
+              "cue": "ping",
+              "at": 1600
+            },
+            {
+              "cue": "ping",
+              "at": 5000,
+              "gain": 0.8
             },
             {
               "cue": "ring",
-              "at": 7500
+              "at": 10600
             },
             {
               "cue": "ring",
-              "at": 13500,
-              "trim": 1.1
+              "at": 16600
+            },
+            {
+              "cue": "ring",
+              "at": 22600,
+              "trim": 1.2
+            },
+            {
+              "cue": "ring",
+              "at": 26800,
+              "trim": 1.0
+            },
+            {
+              "cue": "ping",
+              "at": 31300
             }
           ]
         },
         {
-          "file": "f2-log.html",
-          "minDuration": 16000,
+          "file": "st2-morning.html",
+          "minDuration": 11500,
           "narration": [
-            "By morning there were nine of them. Nine calls, and nobody saw a single one.",
-            "Across a year, that is a hundred and three thousand dollars."
+            {
+              "text": "Monday morning. There's a missed call from eleven forty-seven.",
+              "caption": "Monday morning. There's a missed call from 11:47.",
+              "at": 600
+            },
+            {
+              "text": "That was Maya. Twenty-one nights. Two thousand, four hundred and ninety-nine dollars.",
+              "caption": "That was Maya. 21 nights. $2,499.",
+              "at": 4700
+            }
           ],
           "sfx": [
             {
               "cue": "impact",
               "at": 0,
-              "gain": 0.55
+              "gain": 0.5
             }
           ]
         },
         {
-          "file": "f3-replay.html",
-          "minDuration": 24000,
-          "narrationStart": 900,
+          "file": "st3-rewind.html",
+          "tailMs": 3800,
           "narration": [
-            "The same night. The same call.",
-            "This time, somebody answers.",
-            "Three weeks, quoted on your rates, and booked straight into your P M S."
+            {
+              "text": "Same night. Same call.",
+              "at": 1500
+            },
+            {
+              "text": "This time, somebody answers.",
+              "at": 4300
+            },
+            {
+              "voice": "en-us-amy-low",
+              "role": "maya",
+              "lengthScale": 0.9,
+              "text": "Hi. Do you have anything for three weeks? I start at Saint Luke's Monday.",
+              "caption": "Hi \u2014 do you have anything for three weeks? I start at St. Luke's Monday.",
+              "at": 6800
+            },
+            {
+              "voice": "en-us-kathleen-low",
+              "role": "hotel",
+              "fx": "phone",
+              "lengthScale": 0.9,
+              "text": "We do. A king studio with a kitchen, twenty-one nights at one nineteen. Shall I hold it?",
+              "caption": "We do \u2014 a king studio with a kitchen, 21 nights at $119. Shall I hold it?",
+              "gapBefore": 380
+            },
+            {
+              "voice": "en-us-amy-low",
+              "role": "maya",
+              "lengthScale": 0.9,
+              "text": "Yes, please.",
+              "gapBefore": 280
+            },
+            {
+              "voice": "en-us-kathleen-low",
+              "role": "hotel",
+              "fx": "phone",
+              "lengthScale": 0.9,
+              "text": "Done. Room four twelve is yours, Maya.",
+              "caption": "Done \u2014 room 412 is yours, Maya.",
+              "gapBefore": 300
+            }
           ],
           "sfx": [
             {
+              "cue": "rewind",
+              "at": 0
+            },
+            {
               "cue": "ring",
-              "at": 1400,
+              "at": 2200,
               "trim": 1.4
             },
             {
               "cue": "connect",
-              "at": 2900,
-              "gain": 0.95
+              "at": 3650,
+              "gain": 0.9
             },
             {
-              "cue": "tick",
-              "at": 7900,
-              "gain": 1.0
+              "cue": "keys",
+              "line": 5,
+              "edge": "end",
+              "offset": 700
             },
             {
-              "cue": "tick",
-              "at": 11600,
-              "gain": 1.0
-            },
-            {
-              "cue": "tick",
-              "at": 13900,
-              "gain": 1.0
-            },
-            {
-              "cue": "tick",
-              "at": 17000,
-              "gain": 1.0
-            },
-            {
-              "cue": "confirm",
-              "at": 18200,
-              "gain": 1.2
+              "cue": "ping",
+              "line": 5,
+              "edge": "end",
+              "offset": 2400
             }
           ]
         },
         {
-          "file": "f4-turn.html",
-          "minDuration": 10000,
+          "file": "st4-monday.html",
+          "minDuration": 7500,
           "narration": [
-            "One call was worth four hundred and seventy six dollars.",
-            "Multiply that by every night nobody picked up."
+            {
+              "text": "On Monday, Maya checked in to room four twelve.",
+              "caption": "On Monday, Maya checked in to room 412.",
+              "at": 1000
+            }
+          ],
+          "sfx": [
+            {
+              "cue": "ping",
+              "at": 600
+            },
+            {
+              "cue": "tick",
+              "at": 4300
+            }
           ]
         },
         {
-          "file": "f5-cta.html",
-          "minDuration": 8000,
+          "file": "st5-close.html",
+          "tailMs": 1600,
           "narration": [
-            "HotelBell. The front desk that never lets a stay walk away.",
-            "Book a demo at hotel bell dot A I."
+            {
+              "text": "How many rang out at your hotel last night?",
+              "at": 3200,
+              "sub": false
+            },
+            {
+              "text": "HotelBell. Book a demo at hotel bell dot A I.",
+              "caption": "HotelBell. Book a demo at hotelbell.ai",
+              "gapBefore": 900,
+              "sub": false
+            }
           ]
+        }
+      ],
+      "beds": [
+        {
+          "cue": "room",
+          "gain": 0.38,
+          "from": 0,
+          "to": 34.8,
+          "fadeIn": 1.0,
+          "fadeOut": 1.2
+        },
+        {
+          "cue": "rain",
+          "gain": 0.42,
+          "from": 11.3,
+          "to": 34.8,
+          "fadeIn": 0.25,
+          "fadeOut": 1.2
+        },
+        {
+          "cue": "drone",
+          "gain": 0.3,
+          "from": 9.5,
+          "to": 34.8,
+          "fadeIn": 3.0,
+          "fadeOut": 1.5
+        },
+        {
+          "cue": "room",
+          "gain": 0.22,
+          "from": 34.6,
+          "to": 46.0,
+          "fadeIn": 0.5,
+          "fadeOut": 0.6
+        },
+        {
+          "cue": "rain",
+          "gain": 0.38,
+          "from": 47.1,
+          "to": 73.3,
+          "fadeIn": 0.3,
+          "fadeOut": 1.5
+        },
+        {
+          "cue": "room",
+          "gain": 0.32,
+          "from": 47.1,
+          "to": 73.3,
+          "fadeIn": 0.3,
+          "fadeOut": 1.5
+        },
+        {
+          "cue": "pad",
+          "gain": 0.17,
+          "from": 49.3,
+          "to": 91.7,
+          "fadeIn": 4.0,
+          "fadeOut": 3.0
         }
       ]
     }
