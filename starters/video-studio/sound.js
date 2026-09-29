@@ -72,6 +72,28 @@ const CUES = {
            "afade=t=out:st=0.02:d=0.3,volume=0.22",
   },
 
+  // Warm sustained triad for the resolution half. Where the drone sat under
+  // the problem, this sits under the fix.
+  pad: {
+    note: "Warm pad, 40s bed",
+    filters: [
+      `sine=f=174.61:d=40:r=${SR}`,
+      `sine=f=220:d=40:r=${SR}`,
+      `sine=f=261.63:d=40:r=${SR}`,
+      `sine=f=349.23:d=40:r=${SR}`,
+    ],
+    chain: "[0][1][2][3]amix=inputs=4:normalize=0,tremolo=f=0.1:d=0.18," +
+           "lowpass=f=900,afade=t=in:d=3,volume=0.5",
+  },
+
+  // A line of the transcript landing. Soft, not a keyboard click.
+  tick: {
+    note: "Transcript line lands",
+    filters: [`sine=f=880:d=0.22:r=${SR}`, `sine=f=1174.66:d=0.22:r=${SR}`],
+    chain: "[0][1]amix=inputs=2:normalize=0," +
+           "afade=t=out:st=0.01:d=0.2,volume=0.12",
+  },
+
   // The cut to morning. A soft hit, not a cymbal.
   impact: {
     note: "Scene-change hit",

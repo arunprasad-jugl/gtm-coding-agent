@@ -54,7 +54,13 @@ node record.js --format all            # 16:9, 9:16 and 1:1
 node record.js --video front-desk      # one video from a multi-video config
 node build.js --no-transition          # hard cuts instead of crossfades
 node build.js --gif                    # also write a gif
+node build.js --web                    # also write a <30 MiB upload copy
+node build.js --web 12                 # ...to a different budget, in MiB
 ```
+
+`--web` only kicks in when the master is over budget. Grain-heavy footage is
+the usual reason: the film in this repo masters at ~68 MiB and needs a
+two-pass `-tune grain` copy to clear a 30 MiB limit.
 
 ## How the capture works
 

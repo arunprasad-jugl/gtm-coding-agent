@@ -740,16 +740,32 @@
           "cue": "room",
           "gain": 0.4,
           "from": 0,
-          "to": 64,
+          "to": 38,
           "fadeIn": 1.5,
-          "fadeOut": 5
+          "fadeOut": 3
         },
         {
           "cue": "drone",
           "gain": 0.36,
           "from": 2.5,
-          "to": 38,
+          "to": 40,
           "fadeIn": 3.5,
+          "fadeOut": 6
+        },
+        {
+          "cue": "room",
+          "gain": 0.52,
+          "from": 37,
+          "to": 72,
+          "fadeIn": 2,
+          "fadeOut": 5
+        },
+        {
+          "cue": "pad",
+          "gain": 0.2,
+          "from": 38.5,
+          "to": 78,
+          "fadeIn": 4,
           "fadeOut": 6
         }
       ],
@@ -814,9 +830,29 @@
               "gain": 0.95
             },
             {
+              "cue": "tick",
+              "at": 7900,
+              "gain": 1.0
+            },
+            {
+              "cue": "tick",
+              "at": 11600,
+              "gain": 1.0
+            },
+            {
+              "cue": "tick",
+              "at": 13900,
+              "gain": 1.0
+            },
+            {
+              "cue": "tick",
+              "at": 17000,
+              "gain": 1.0
+            },
+            {
               "cue": "confirm",
               "at": 18200,
-              "gain": 1.0
+              "gain": 1.2
             }
           ]
         },

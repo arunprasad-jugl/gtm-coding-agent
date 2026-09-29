@@ -115,7 +115,40 @@ for (const videoId of videoIds) {
     const mb = (fs.statSync(final).size / 1e6).toFixed(1);
     console.log(`  \x1b[32m▶\x1b[0m ${path.relative(ROOT, final)}  ${total.toFixed(1)}s  ${mb} MB${track ? "  + audio" : ""}`);
 
-    // --- 4. optional gif --------------------------------------------------
+    // --- 4. a version that will actually upload ---------------------------
+    // Film grain is expensive to compress, so a grain-heavy master can be
+    // several times the size of a clean one and bounce off upload limits.
+    // Two-pass to a fixed budget, with -tune grain so the texture survives.
+    const capMb = args.web === true ? 30 : args.web ? Number(args.web) : 0;
+    if (capMb) {
+      const mbNow = fs.statSync(final).size / 1048576;
+      if (mbNow > capMb) {
+        const web = final.replace(/\.mp4$/, "-web.mp4");
+        const audioKbps = 128;
+        const budgetKbps = Math.floor((capMb * 0.94 * 8192) / total) - audioKbps;
+        const passLog = path.join(ROOT, "out", `.pass-${videoId}-${format}`);
+
+        for (const pass of [1, 2]) {
+          await ffmpeg([
+            "-y", "-i", final,
+            "-c:v", "libx264", "-preset", "slow", "-tune", "grain",
+            "-b:v", `${budgetKbps}k`, "-passlogfile", passLog, "-pass", String(pass),
+            ...(pass === 1
+              ? ["-an", "-f", "mp4", "/dev/null"]
+              : ["-pix_fmt", "yuv420p", "-movflags", "+faststart",
+                 "-c:a", "aac", "-b:a", `${audioKbps}k`, web]),
+          ]);
+        }
+        const dir = path.dirname(passLog);
+        for (const f of fs.readdirSync(dir)) {
+          if (f.startsWith(path.basename(passLog))) fs.rmSync(path.join(dir, f));
+        }
+        console.log(`  \x1b[32m▶\x1b[0m ${path.relative(ROOT, web)}  ` +
+                    `${(fs.statSync(web).size / 1048576).toFixed(1)} MiB (was ${mbNow.toFixed(1)})`);
+      }
+    }
+
+    // --- 5. optional gif --------------------------------------------------
     if (args.gif || enc.gif) {
       const gif = final.replace(/\.mp4$/, ".gif");
       const palette = path.join(ROOT, "out", ".palette.png");
